@@ -1,0 +1,120 @@
+<configuration debug="true" scan="true">
+
+ 	<property name="LOG_PATH" value="log/" />
+ 	<property name="DEFAULT_PATTERN" value="%highlight([%-5level]) [%date{ISO8601}] [%class{50}->%method] [%file:%line] |- %msg%n" />
+ 	<property name="EXCEPTION_PATTERN" value="%highlight([%-5level]) [%date{ISO8601}] [%class{50}->%method] [%file:%line] [Exception %msg - Thread ID %thread - Start]%n%xEx%n[Exception %msg - End]%n" />
+	<property name="DEFAULT_MAX_FILE_SIZE" value="100MB" />
+	<property name="DEFAULT_MAX_HISTORY" value="45" />
+
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<!-- encoders are by default assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder -->
+		<encoder>
+			<pattern>${DEFAULT_PATTERN}</pattern>
+		</encoder>
+	</appender>
+	
+	<appender name="ap_system" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    	<file>${LOG_PATH}system.log</file>
+    	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      		<!-- rollover daily -->
+      		<fileNamePattern>${LOG_PATH}system.log.k7d-%d{yyyy-MM-dd}.gz</fileNamePattern>
+      		<maxHistory>${DEFAULT_MAX_HISTORY}</maxHistory>
+    	</rollingPolicy>
+    	<encoder>
+      		<pattern>${DEFAULT_PATTERN}</pattern>
+    	</encoder>
+    </appender>
+
+    <appender name="ap_dao" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}dao.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- rollover daily -->
+            <fileNamePattern>${LOG_PATH}dao.log.k7d-%d{yyyy-MM-dd}.gz</fileNamePattern>
+            <maxHistory>${DEFAULT_MAX_HISTORY}</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${DEFAULT_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="ap_exceptions" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    	<file>${LOG_PATH}exceptions.log</file>
+    	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      		<!-- rollover daily -->
+      		<fileNamePattern>${LOG_PATH}exceptions.log.k7d-%d{yyyy-MM-dd}.gz</fileNamePattern>
+      		<maxHistory>${DEFAULT_MAX_HISTORY}</maxHistory>
+    	</rollingPolicy>
+    	<encoder>
+      		<pattern>${EXCEPTION_PATTERN}</pattern>
+    	</encoder>
+    </appender>
+    
+    <appender name="ap_requests_answered" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    	<file>${LOG_PATH}requests_answered.log</file>
+    	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      		<!-- rollover daily -->
+      		<fileNamePattern>${LOG_PATH}requests_answered.log.k7d-%d{yyyy-MM-dd}.gz</fileNamePattern>
+      		<maxHistory>${DEFAULT_MAX_HISTORY}</maxHistory>
+    	</rollingPolicy>
+    	<encoder>
+      		<pattern>${DEFAULT_PATTERN}</pattern>
+    	</encoder>
+    </appender>
+    
+    <appender name="ap_requests_performed" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    	<file>${LOG_PATH}requests_performed.log</file>
+    	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      		<!-- rollover daily -->
+      		<fileNamePattern>${LOG_PATH}requests_performed.log.k7d-%d{yyyy-MM-dd}.gz</fileNamePattern>
+      		<maxHistory>${DEFAULT_MAX_HISTORY}</maxHistory>
+    	</rollingPolicy>
+    	<encoder>
+      		<pattern>${DEFAULT_PATTERN}</pattern>
+    	</encoder>
+    </appender>
+
+    <appender name="ap_system_tools" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    	<file>${LOG_PATH}system_tools.log</file>
+    	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      		<!-- rollover daily -->
+      		<fileNamePattern>${LOG_PATH}system_tools.log.k7d-%d{yyyy-MM-dd}.gz</fileNamePattern>
+      		<maxHistory>${DEFAULT_MAX_HISTORY}</maxHistory>
+    	</rollingPolicy>
+    	<encoder>
+      		<pattern>${DEFAULT_PATTERN}</pattern>
+    	</encoder>
+    </appender>
+
+    <logger name="DAO" level="DEBUG" additivity="false">
+        <appender-ref ref="ap_dao" />
+    </logger>
+
+	<logger name="com.tcbook" level="DEBUG" additivity="false">
+		<appender-ref ref="ap_system" />
+	</logger>
+
+	<logger name="EXCEPTIONS" level="DEBUG" additivity="false">
+		<appender-ref ref="ap_exceptions" />
+	</logger>
+
+	<logger name="REQUESTS_ANSWERED" level="DEBUG" additivity="false">
+		<appender-ref ref="ap_requests_answered" />
+	</logger>
+
+	<logger name="REQUESTS_PERFORMED" level="DEBUG" additivity="false">
+		<appender-ref ref="ap_requests_performed" />
+	</logger>
+
+	<logger name="org.apache" level="INFO" additivity="false">
+		<appender-ref ref="ap_system_tools" />
+	</logger>
+
+	<logger name="org.springframework" level="INFO" additivity="false">
+		<appender-ref ref="ap_system_tools" />
+	</logger>
+		
+	<root level="info">
+		<appender-ref ref="STDOUT" />
+	</root>
+
+</configuration>
