@@ -5,19 +5,19 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
- * Created by caiouvini on 4/4/14.
+ * Created by caiouvini on 4/5/14.
  */
-public class People {
+public class MusicalArtist {
 
     private Long id;
 
-    private String login;
+    private String artisticName;
+
+    private String country;
+
+    private String genre;
 
     private String url;
-
-    private String name;
-
-    private String hometown;
 
     public Long getId() {
         return id;
@@ -27,12 +27,28 @@ public class People {
         this.id = id;
     }
 
-    public String getLogin() {
-        return login;
+    public String getArtisticName() {
+        return artisticName;
     }
 
-    public void setLogin(String login) {
-        this.login = login;
+    public void setArtisticName(String artisticName) {
+        this.artisticName = artisticName;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public String getGenre() {
+        return genre;
+    }
+
+    public void setGenre(String genre) {
+        this.genre = genre;
     }
 
     public String getUrl() {
@@ -41,22 +57,6 @@ public class People {
 
     public void setUrl(String url) {
         this.url = url;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getHometown() {
-        return hometown;
-    }
-
-    public void setHometown(String hometown) {
-        this.hometown = hometown;
     }
 
     @Override

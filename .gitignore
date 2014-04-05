@@ -1,0 +1,21 @@
+*.class
+
+# Package Files #
+*.jar
+!gradle/wrapper/*.jar
+*.war
+*.ear
+*.iml
+*.ipr
+*.iws
+.project
+.gradle
+.idea
+build/
+.settings/
+.classpath
+logs/
+out/
+downloadable-resources/dynamodb-local/*
+
+$buildDir/
