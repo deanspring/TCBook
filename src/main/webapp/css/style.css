@@ -9,3 +9,5 @@ body { padding-top: 70px; }
 .float-right {float: right;}
 
 .row:not([role="main"]) {display: none;}
+
+.new-person-form {display: none;}
