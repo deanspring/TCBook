@@ -19,3 +19,5 @@ out/
 downloadable-resources/dynamodb-local/*
 
 $buildDir/
+log/*
+*.log

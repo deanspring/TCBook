@@ -47,7 +47,7 @@ public class MusicalArtistDAOImpl extends DAO implements MusicalArtistDAO {
         return DataSourceType.valueOf(TCBookProperties.getInstance().getString("tcbook.db.type"));
     }
 
-    @Override
+	@Override
     public MusicalArtist find(final Long id) {
         MusicalArtist result = null;
         try {
@@ -189,7 +189,7 @@ public class MusicalArtistDAOImpl extends DAO implements MusicalArtistDAO {
         }
     }
 
-    private class MusicalArtistRowMapper implements RowMapper {
+    private class MusicalArtistRowMapper implements RowMapper<Object> {
 
         @Override
         public Object mapRow(ResultSet resultSet, int i) throws SQLException {

@@ -13,18 +13,16 @@ public class SmartProperties {
 
     public String getString(String property, String defaultValue) {
         String value = properties.getProperty(property);
-        if (value == null) {
+        if (value == null)
             return defaultValue;
-        } else {
-            return value;
-        }
+        return value;
     }
 
     public Integer getInt(String property, Integer defaultValue) {
         String value = properties.getProperty(property);
-        if (value == null) {
+        if (value == null)
             return defaultValue;
-        }
+
         try {
             Integer result = new Integer(value);
             return result;
@@ -35,9 +33,9 @@ public class SmartProperties {
 
     public Long getLong(String property, Long defaultValue) {
         String value = properties.getProperty(property);
-        if (value == null) {
+        if (value == null)
             return defaultValue;
-        }
+
         try {
             Long result = new Long(value);
             return result;
@@ -48,9 +46,9 @@ public class SmartProperties {
 
     public Boolean getBoolean(String property, Boolean defaultValue) {
         String value = properties.getProperty(property);
-        if (value == null) {
+        if (value == null)
             return defaultValue;
-        }
+
         try {
             Boolean result = Boolean.valueOf(value);
             return result;
@@ -61,9 +59,9 @@ public class SmartProperties {
 
     public Double getDouble(String property, Double defaultValue) {
         String value = properties.getProperty(property);
-        if (value == null) {
+        if (value == null)
             return defaultValue;
-        }
+
         try {
             Double result = new Double(value);
             return result;
@@ -87,9 +85,8 @@ public class SmartProperties {
     }
 
     public void loadProperties(Properties p) throws IOException {
-        if (p == null) {
+        if (p == null)
             throw new IllegalArgumentException();
-        }
 
         properties.putAll(p);
     }
@@ -98,32 +95,28 @@ public class SmartProperties {
         String result = getString(s, null);
         if (result == null)
             throw new RuntimeException("Missing value for mandatory property " + s);
-        else
-            return result;
+        return result;
     }
 
     public int getInt(String s) {
         Integer result = getInt(s, null);
         if (result == null)
             throw new RuntimeException("Missing value for mandatory property " + s);
-        else
-            return result;
+        return result;
     }
 
     public boolean getBoolean(String s) {
         Boolean result = getBoolean(s, null);
         if (result == null)
             throw new RuntimeException("Missing value for mandatory property " + s);
-        else
-            return result;
+        return result;
     }
 
     public double getDouble(String s) {
         Double result = getDouble(s, null);
         if (result == null)
             throw new RuntimeException("Missing value for mandatory property " + s);
-        else
-            return result;
+        return result;
     }
 
     public Properties getUnderlyingProperties() {

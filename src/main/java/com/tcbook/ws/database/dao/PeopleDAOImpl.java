@@ -239,7 +239,7 @@ public class PeopleDAOImpl extends DAO implements PeopleDAO {
         }
     }
 
-    private class PeopleRowMapper implements RowMapper {
+    private class PeopleRowMapper implements RowMapper<Object> {
 
         @Override
         public Object mapRow(ResultSet resultSet, int i) throws SQLException {
