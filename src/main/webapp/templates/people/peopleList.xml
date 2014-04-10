@@ -1,27 +1,35 @@
 <div>
-	<h1>
-		Lista de pessoas
-		<a class="btn btn-primary btn-sm float-right new-person" role="button">Incluir nova pessoa</a>
-	</h1>
 	<div class="new-person-form">
-		<form role="form">
+		<h1>
+			Nova pessoa
+			<a class="btn btn-primary btn-sm float-right go-back-people-list" role="button">Voltar</a>
+		</h1>
+		<form class="col-row-3" role="form">
 			<div class="form-group">
 				<label for="name">Nome</label>
 				<input type="text" class="form-control" id="name" placeholder="Nome"/>
 			</div>
 			<div class="form-group">
 				<label for="login">Login</label>
-				<input type="text" class="form-control" id="login" placeholder="login"/>
+				<input type="text" class="form-control" id="login" placeholder="Login unico"/>
 			</div>
 			<div class="form-group">
-				<label for="hometown">File input</label>
+				<label for="hometown">Cidade natal</label>
 				<input type="text" class="form-control" id="hometown" placeholder="Cidade natal"/>
 			</div>
-			<button type="submit" class="btn btn-default">Submit</button>
+			<div class="form-group">
+				<label for="url">Url</label>
+				<input type="text" class="form-control" id="url" placeholder="Url"/>
+			</div>
+			<input type="button" class="btn btn-default" value="Salvar"/>
 		</form>
 	</div>
 	<div class="people-list">
-		{{? it.people.length == 0}}
+		<h1>
+			Lista de pessoas
+			<a class="btn btn-primary btn-sm float-right new-person" role="button">Incluir nova pessoa</a>
+		</h1>
+		{{? !it.people || it.people.length == 0}}
 		<i> Sem pessoas cadastradas</i>
 		{{??}}
 		<table class="table table-striped table-hover">
@@ -31,6 +39,8 @@
 					<th class="panel-heading">Nome</th>
 					<th class="panel-heading">Login</th>
 					<th class="panel-heading">Cidade natal</th>
+					<th class="panel-heading">URL</th>
+					<th class="panel-heading">Editar</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -40,6 +50,8 @@
 					<td>{{=person.name}}</td>
 					<td>{{=person.login}}</td>
 					<td>{{=person.hometown}}</td>
+					<td>{{=person.url}}</td>
+					<td><i class="glyphicon glyphicon-edit edit-person"></i></td>
 				</tr>
 				{{~}}
 			</tbody>
@@ -51,6 +63,47 @@
 			$('.people-list').slideUp(function() {
 				$('.new-person-form').slideDown();
 			});
+		});
+		$('.go-back-people-list').click(function() {
+			$('.new-person-form').slideUp(function() {
+				$('.people-list').slideDown();
+			});
+		});
+
+		$('.new-person-form input[type="button"]').click(function() {
+			var id = $(this).data('id');
+			var data = {};
+			if (id)
+				data.id = id;
+			if ($('#name').val())
+				data.name = $('#name').val();
+			if ($('#login').val())
+				data.login = $('#login').val();
+			if ($('#hometown').val())
+				data.hometown = $('#hometown').val();
+			if ($('#url').val())
+				data.url = $('#url').val();
+			$.ajax({
+				type : id ? 'PUT' : 'POST',
+				url : 's/people/' + (id ? id : ''),
+				data : {person : JSON.stringify(data)},
+				success : function() {
+					people.load();
+				}
+			});
+		});
+
+		$('.edit-person').click(function() {
+			$('.people-list').slideUp(function() {
+				$('.new-person-form').slideDown();
+			});
+
+			var tds = $(this).parent().siblings();
+			$('.new-person-form input[type="button"]').data('id', tds.eq(0).text());
+			$('#name').val(tds.eq(1).text());
+			$('#login').val(tds.eq(2).text());
+			$('#hometown').val(tds.eq(3).text());
+			$('#url').val(tds.eq(4).text());
 		});
 	</script>
 </div>

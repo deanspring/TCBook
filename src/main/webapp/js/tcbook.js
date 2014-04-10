@@ -12,11 +12,7 @@
 				mainContainer.find('#main').slideDown().addClass('active');
 		});
 		$('a[href="#pessoas"]').click(function() {
-			$.getJSON('s/people/', function(people) {
-				$.loadTemplate('templates/people/peopleList.xml', '[role="content"]', {people : people}, function() {
-					$('[role="content"]').slideDown().addClass('active');
-				});
-			});
+			people.load();
 		});
 	});
 
@@ -34,4 +30,14 @@
 		});
 	};
 
+	
+	people = {};
+
+	people.load = function() {
+		$.getJSON('s/people/', function(people) {
+			$.loadTemplate('templates/people/peopleList.xml', '[role="content"]', {people : people}, function() {
+				$('[role="content"]').slideDown().addClass('active');
+			});
+		});
+	};
 })(window.jQuery);
