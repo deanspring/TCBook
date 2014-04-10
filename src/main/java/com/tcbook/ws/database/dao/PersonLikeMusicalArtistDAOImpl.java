@@ -12,22 +12,22 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-public class PeopleLikeMusicalArtistDAOImpl extends DAO implements PeopleLikeMusicalArtistDAO {
+public class PersonLikeMusicalArtistDAOImpl extends DAO implements PersonLikeMusicalArtistDAO {
 
-    private static PeopleLikeMusicalArtistDAOImpl instance;
+    private static PersonLikeMusicalArtistDAOImpl instance;
 
     private static final String DB_ALIAS = "TCBOOK_DB";
 
     private static Logger log = LoggerFactory.getLogger(TCBookConstants.LOG_NAME_DAO);
     private static Logger logEx = LoggerFactory.getLogger(TCBookConstants.LOG_NAME_EXCEPTIONS);
 
-    private PeopleLikeMusicalArtistDAOImpl() {
+    private PersonLikeMusicalArtistDAOImpl() {
         super();
     }
 
-    public static PeopleLikeMusicalArtistDAOImpl getInstance() {
+    public static PersonLikeMusicalArtistDAOImpl getInstance() {
         if (instance == null) {
-            instance = new PeopleLikeMusicalArtistDAOImpl();
+            instance = new PersonLikeMusicalArtistDAOImpl();
         }
         return instance;
     }
@@ -42,7 +42,7 @@ public class PeopleLikeMusicalArtistDAOImpl extends DAO implements PeopleLikeMus
         return DataSourceType.valueOf(TCBookProperties.getInstance().getString("tcbook.db.type"));
     }
 
-    public void insert(final Long idPeople, final Long idMusicalArtist, final Integer rating) throws SQLException {
+    public void insert(final Long idPerson, final Long idMusicalArtist, final Integer rating) throws SQLException {
         try {
             final StringBuilder sb = new StringBuilder();
             sb.append("INSERT INTO pessoacurteartistamusical");
@@ -59,7 +59,7 @@ public class PeopleLikeMusicalArtistDAOImpl extends DAO implements PeopleLikeMus
                     PreparedStatement ps = connection.prepareStatement(sb.toString());
                     int i = 1;
 
-                    ps.setInt(i++, idPeople.intValue());
+                    ps.setInt(i++, idPerson.intValue());
 
                     ps.setInt(i++, idMusicalArtist.intValue());
 
@@ -70,14 +70,14 @@ public class PeopleLikeMusicalArtistDAOImpl extends DAO implements PeopleLikeMus
                     return ps;
                 }
             });
-            log.info("[PEOPLE_LIKE_MUSICAL_ARTIST] People {} rating MusicalArtist {} inserted in database in " + (System.currentTimeMillis() - before) + "ms", idPeople, idMusicalArtist);
+            log.info("[person_LIKE_MUSICAL_ARTIST] Person {} rating MusicalArtist {} inserted in database in " + (System.currentTimeMillis() - before) + "ms", idPerson, idMusicalArtist);
         } catch (Exception e) {
-            log.error("[PEOPLE_LIKE_MUSICAL_ARTIST] Error persisting People {} rating MusicalArtist {}. Exception " + e, idPeople, idMusicalArtist);
-            logEx.error("Error persisting people like musical artist", e);
+            log.error("[person_LIKE_MUSICAL_ARTIST] Error persisting Person {} rating MusicalArtist {}. Exception " + e, idPerson, idMusicalArtist);
+            logEx.error("Error persisting person like musical artist", e);
         }
     }
 
-    public void remove(final Long idPeople, final Long idMusicalArtist) throws SQLException {
+    public void remove(final Long idPerson, final Long idMusicalArtist) throws SQLException {
         try {
             final StringBuilder sb = new StringBuilder();
             sb.append("DELETE FROM pessoacurteartistamusical WHERE ");
@@ -91,15 +91,15 @@ public class PeopleLikeMusicalArtistDAOImpl extends DAO implements PeopleLikeMus
                     PreparedStatement ps = connection.prepareStatement(sb.toString());
                     int i = 1;
 
-                    ps.setInt(i++, idPeople.intValue());
+                    ps.setInt(i++, idPerson.intValue());
 
                     ps.setInt(i++, idMusicalArtist.intValue());
                     return ps;
                 }
             });
-            log.info("[PEOPLE_LIKE_MUSICAL_ARTIST] People {} rating MusicalArtist {} removed from database in " + (System.currentTimeMillis() - before) + "ms", idPeople, idMusicalArtist);
+            log.info("[person_LIKE_MUSICAL_ARTIST] Person {} rating MusicalArtist {} removed from database in " + (System.currentTimeMillis() - before) + "ms", idPerson, idMusicalArtist);
         } catch (Exception e) {
-            log.error("[PEOPLE_LIKE_MUSICAL_ARTIST] Error removing People {} rating MusicalArtist {}. Exception " + e, idPeople, idMusicalArtist);
+            log.error("[person_LIKE_MUSICAL_ARTIST] Error removing Person {} rating MusicalArtist {}. Exception " + e, idPerson, idMusicalArtist);
             logEx.error("Error removing colleague", e);
         }
     }
@@ -121,14 +121,14 @@ public class PeopleLikeMusicalArtistDAOImpl extends DAO implements PeopleLikeMus
                     return ps;
                 }
             });
-            log.info("[PEOPLE_LIKE_MUSICAL_ARTIST] Ratings for MusicalArtist {} removed from database in " + (System.currentTimeMillis() - before) + "ms", idMusicalArtist);
+            log.info("[person_LIKE_MUSICAL_ARTIST] Ratings for MusicalArtist {} removed from database in " + (System.currentTimeMillis() - before) + "ms", idMusicalArtist);
         } catch (Exception e) {
-            log.error("[PEOPLE_LIKE_MUSICAL_ARTIST] Error removing ratings for MusicalArtist {}. Exception " + e, idMusicalArtist);
+            log.error("[person_LIKE_MUSICAL_ARTIST] Error removing ratings for MusicalArtist {}. Exception " + e, idMusicalArtist);
             logEx.error("Error removing ratings for MusicalArtist", e);
         }
     }
 
-    public void removeAllForPeople(final Long idPeople) throws SQLException {
+    public void removeAllForPerson(final Long idPerson) throws SQLException {
         try {
             final StringBuilder sb = new StringBuilder();
             sb.append("DELETE FROM pessoacurteartistamusical WHERE ");
@@ -140,15 +140,15 @@ public class PeopleLikeMusicalArtistDAOImpl extends DAO implements PeopleLikeMus
 
                     PreparedStatement ps = connection.prepareStatement(sb.toString());
 
-                    ps.setInt(1, idPeople.intValue());
+                    ps.setInt(1, idPerson.intValue());
 
                     return ps;
                 }
             });
-            log.info("[PEOPLE_LIKE_MUSICAL_ARTIST] People {} ratings removed from database in " + (System.currentTimeMillis() - before) + "ms", idPeople);
+            log.info("[person_LIKE_MUSICAL_ARTIST] Person {} ratings removed from database in " + (System.currentTimeMillis() - before) + "ms", idPerson);
         } catch (Exception e) {
-            log.error("[PEOPLE_LIKE_MUSICAL_ARTIST] Error removing People {} ratings. Exception " + e, idPeople);
-            logEx.error("Error removing people ratings", e);
+            log.error("[person_LIKE_MUSICAL_ARTIST] Error removing Person {} ratings. Exception " + e, idPerson);
+            logEx.error("Error removing person ratings", e);
         }
     }
 

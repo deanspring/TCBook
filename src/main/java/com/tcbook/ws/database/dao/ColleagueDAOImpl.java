@@ -66,7 +66,7 @@ public class ColleagueDAOImpl extends DAO implements ColleagueDAO {
         return result;
     }
 
-    public void insert(final Long idPeople, final Long idColleague) throws SQLException {
+    public void insert(final Long idPerson, final Long idColleague) throws SQLException {
         try {
             final StringBuilder sb = new StringBuilder();
             sb.append("INSERT INTO conhece");
@@ -81,20 +81,20 @@ public class ColleagueDAOImpl extends DAO implements ColleagueDAO {
                     PreparedStatement ps = connection.prepareStatement(sb.toString());
                     int i = 1;
 
-                    ps.setInt(i++, idPeople.intValue());
+                    ps.setInt(i++, idPerson.intValue());
 
                     ps.setInt(i++, idColleague.intValue());
                     return ps;
                 }
             });
-            log.info("[COLLEAGUE_DAO] People {} and People {} colleague's inserted in database in " + (System.currentTimeMillis() - before) + "ms", idPeople, idColleague);
+            log.info("[COLLEAGUE_DAO] Person {} and Person {} colleague's inserted in database in " + (System.currentTimeMillis() - before) + "ms", idPerson, idColleague);
         } catch (Exception e) {
-            log.error("[COLLEAGUE_DAO] Error persisting People {} and People {} colleague's. Exception " + e, idPeople, idColleague);
+            log.error("[COLLEAGUE_DAO] Error persisting Person {} and Person {} colleague's. Exception " + e, idPerson, idColleague);
             logEx.error("Error persisting colleague", e);
         }
     }
 
-    public void remove(final Long idPeople, final Long idColleague) throws SQLException {
+    public void remove(final Long idPerson, final Long idColleague) throws SQLException {
         try {
             final StringBuilder sb = new StringBuilder();
             sb.append("DELETE FROM conhece WHERE ");
@@ -108,15 +108,15 @@ public class ColleagueDAOImpl extends DAO implements ColleagueDAO {
                     PreparedStatement ps = connection.prepareStatement(sb.toString());
                     int i = 1;
 
-                    ps.setInt(i++, idPeople.intValue());
+                    ps.setInt(i++, idPerson.intValue());
 
                     ps.setInt(i++, idColleague.intValue());
                     return ps;
                 }
             });
-            log.info("[COLLEAGUE_DAO] People {} and People {} colleague's removed from database in " + (System.currentTimeMillis() - before) + "ms", idPeople, idColleague);
+            log.info("[COLLEAGUE_DAO] Person {} and Person {} colleague's removed from database in " + (System.currentTimeMillis() - before) + "ms", idPerson, idColleague);
         } catch (Exception e) {
-            log.error("[COLLEAGUE_DAO] Error removing People {} and People {} colleague's. Exception " + e, idPeople, idColleague);
+            log.error("[COLLEAGUE_DAO] Error removing Person {} and Person {} colleague's. Exception " + e, idPerson, idColleague);
             logEx.error("Error removing colleague", e);
         }
     }
