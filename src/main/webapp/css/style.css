@@ -13,3 +13,5 @@ body { padding-top: 70px; }
 .row:not([role="main"]) {display: none;}
 
 .new-person-form {display: none;}
+
+.glyphicon {cursor: pointer;}

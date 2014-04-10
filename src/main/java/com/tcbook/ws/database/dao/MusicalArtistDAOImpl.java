@@ -19,189 +19,190 @@ import java.util.Map;
 
 public class MusicalArtistDAOImpl extends DAO implements MusicalArtistDAO {
 
-    private static MusicalArtistDAOImpl instance;
+	private static MusicalArtistDAOImpl instance;
 
-    private static final String DB_ALIAS = "TCBOOK_DB";
+	private static final String DB_ALIAS = "TCBOOK_DB";
 
-    private static Logger log = LoggerFactory.getLogger(TCBookConstants.LOG_NAME_DAO);
-    private static Logger logEx = LoggerFactory.getLogger(TCBookConstants.LOG_NAME_EXCEPTIONS);
+	private static Logger log = LoggerFactory.getLogger(TCBookConstants.LOG_NAME_DAO);
+	private static Logger logEx = LoggerFactory.getLogger(TCBookConstants.LOG_NAME_EXCEPTIONS);
 
-    private MusicalArtistDAOImpl() {
-        super();
-    }
+	private MusicalArtistDAOImpl() {
+		super();
+	}
 
-    public static MusicalArtistDAOImpl getInstance() {
-        if (instance == null) {
-            instance = new MusicalArtistDAOImpl();
-        }
-        return instance;
-    }
-
-    @Override
-    protected String getDatabaseAlias() {
-        return DB_ALIAS;
-    }
-
-    @Override
-    protected DataSourceType getDataSourceType() {
-        return DataSourceType.valueOf(TCBookProperties.getInstance().getString("tcbook.db.type"));
-    }
+	public static MusicalArtistDAOImpl getInstance() {
+		if (instance == null) {
+			instance = new MusicalArtistDAOImpl();
+		}
+		return instance;
+	}
 
 	@Override
-    public MusicalArtist find(final Long id) {
-        MusicalArtist result = null;
-        try {
-            final StringBuilder sb = new StringBuilder();
-            sb.append("SELECT * FROM artistamusical");
-            sb.append(" WHERE id=? LIMIT 1");
+	protected String getDatabaseAlias() {
+		return DB_ALIAS;
+	}
 
-            long before = System.currentTimeMillis();
-            result = (MusicalArtist) getJdbc().queryForObject(sb.toString(), new Object[]{id}, new MusicalArtistRowMapper());
-            log.info("[MUSICAL_ARTIST_DAO] MusicalArtist {} found in database in " + (System.currentTimeMillis() - before) + "ms", result);
-        } catch (Exception e) {
-            log.error("[MUSICAL_ARTIST_DAO] Error searching MUSICAL_ARTIST_DAO id: {}. Exception " + e, id);
-            logEx.error("Error searching MusicalArtist", e);
-        }
-        return result;
-    }
+	@Override
+	protected DataSourceType getDataSourceType() {
+		return DataSourceType.valueOf(TCBookProperties.getInstance().getString("tcbook.db.type"));
+	}
 
-    @Override
-    public List<MusicalArtist> findAll() {
-        List<MusicalArtist> result = null;
-        try {
-            final StringBuilder sb = new StringBuilder();
-            sb.append("SELECT * FROM artistamusical");
+	@Override
+	public MusicalArtist find(final Long id) {
+		MusicalArtist result = null;
+		try {
+			final StringBuilder sb = new StringBuilder();
+			sb.append("SELECT * FROM artistamusical");
+			sb.append(" WHERE id=? LIMIT 1");
 
-            long before = System.currentTimeMillis();
-            List<Map<String, Object>> rows = getJdbc().queryForList(sb.toString());
-            result = new ArrayList<MusicalArtist>();
+			long before = System.currentTimeMillis();
+			result = (MusicalArtist) getJdbc().queryForObject(sb.toString(), new Object[] { id }, new MusicalArtistRowMapper());
+			log.info("[MUSICAL_ARTIST_DAO] MusicalArtist {} found in database in " + (System.currentTimeMillis() - before) + "ms", result);
+		} catch (Exception e) {
+			log.error("[MUSICAL_ARTIST_DAO] Error searching MUSICAL_ARTIST_DAO id: {}. Exception " + e, id);
+			logEx.error("Error searching MusicalArtist", e);
+		}
+		return result;
+	}
 
-            for (Map<String, Object> row : rows) {
-                MusicalArtist artist = new MusicalArtist();
-                artist.setId(new Long((Integer) row.get("id")));
-                artist.setArtisticName(row.get("nome_artistico").toString());
-                artist.setCountry(row.get("pais").toString());
-                artist.setGenre(row.get("genero").toString());
-                artist.setUrl(row.get("url").toString());
-                result.add(artist);
-            }
+	@Override
+	public List<MusicalArtist> findAll() {
+		List<MusicalArtist> result = null;
+		try {
+			final StringBuilder sb = new StringBuilder();
+			sb.append("SELECT * FROM ArtistaMusical");
 
-            log.info("[MUSICAL_ARTIST_DAO] All MusicalArtist found in database in " + (System.currentTimeMillis() - before) + "ms");
-        } catch (Exception e) {
-            log.error("[MUSICAL_ARTIST_DAO] Error searching for all MusicalArtist. Exception " + e);
-            logEx.error("Error searching for all MusicalArtist", e);
-        }
-        return result;
-    }
+			long before = System.currentTimeMillis();
+			List<Map<String, Object>> rows = getJdbc().queryForList(sb.toString());
+			result = new ArrayList<MusicalArtist>();
 
-    @Override
-    public void insert(final MusicalArtist artist) throws SQLException {
-        try {
-            final StringBuilder sb = new StringBuilder();
-            sb.append("INSERT INTO artistamusical");
-            sb.append(" (nome_artistico,");
-            sb.append("pais,");
-            sb.append("genero,");
-            sb.append("url)");
-            sb.append(" VALUES (?,?,?,?)");
+			for (Map<String, Object> row : rows) {
+				MusicalArtist artist = new MusicalArtist();
+				artist.setId(new Long((Integer) row.get("id")));
+				artist.setArtisticName(row.get("nome_artistico").toString());
+				artist.setCountry(row.get("pais").toString());
+				artist.setGenre(row.get("genero").toString());
+				artist.setUrl(row.get("url").toString());
+				result.add(artist);
+			}
 
-            long before = System.currentTimeMillis();
-            getJdbc().update(new PreparedStatementCreator() {
-                public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+			log.info("[MUSICAL_ARTIST_DAO] All MusicalArtist found in database in " + (System.currentTimeMillis() - before) + "ms");
+		} catch (Exception e) {
+			log.error("[MUSICAL_ARTIST_DAO] Error searching for all MusicalArtist. Exception " + e);
+			logEx.error("Error searching for all MusicalArtist", e);
+		}
 
-                    PreparedStatement ps = connection.prepareStatement(sb.toString());
-                    int i = 1;
+		return result;
+	}
 
-                    ps.setString(i++, artist.getArtisticName());
+	@Override
+	public void insert(final MusicalArtist artist) throws SQLException {
+		try {
+			final StringBuilder sb = new StringBuilder();
+			sb.append("INSERT INTO artistamusical");
+			sb.append(" (nome_artistico,");
+			sb.append("pais,");
+			sb.append("genero,");
+			sb.append("url)");
+			sb.append(" VALUES (?,?,?,?)");
 
-                    ps.setString(i++, artist.getCountry());
+			long before = System.currentTimeMillis();
+			getJdbc().update(new PreparedStatementCreator() {
+				public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
 
-                    ps.setString(i++, artist.getGenre());
+					PreparedStatement ps = connection.prepareStatement(sb.toString());
+					int i = 1;
 
-                    ps.setString(i++, artist.getUrl());
+					ps.setString(i++, artist.getArtisticName());
 
-                    return ps;
-                }
-            });
-            log.info("[MUSICAL_ARTIST_DAO] MusicalArtist {} inserted in database in " + (System.currentTimeMillis() - before) + "ms", artist);
-        } catch (Exception e) {
-            log.error("[MUSICAL_ARTIST_DAO] Error persisting MusicalArtist {}. Exception " + e, artist);
-            logEx.error("Error persisting MusicalArtist", e);
-        }
-    }
+					ps.setString(i++, artist.getCountry());
 
-    @Override
-    public void remove(final Long id) throws SQLException {
-        try {
-            final StringBuilder sb = new StringBuilder();
-            sb.append("DELETE FROM artistamusical WHERE id = ?");
+					ps.setString(i++, artist.getGenre());
 
-            long before = System.currentTimeMillis();
-            getJdbc().update(new PreparedStatementCreator() {
-                public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+					ps.setString(i++, artist.getUrl());
 
-                    PreparedStatement ps = connection.prepareStatement(sb.toString());
+					return ps;
+				}
+			});
+			log.info("[MUSICAL_ARTIST_DAO] MusicalArtist {} inserted in database in " + (System.currentTimeMillis() - before) + "ms", artist);
+		} catch (Exception e) {
+			log.error("[MUSICAL_ARTIST_DAO] Error persisting MusicalArtist {}. Exception " + e, artist);
+			logEx.error("Error persisting MusicalArtist", e);
+		}
+	}
 
-                    ps.setInt(1, id.intValue());
+	@Override
+	public void remove(final Long id) throws SQLException {
+		try {
+			final StringBuilder sb = new StringBuilder();
+			sb.append("DELETE FROM artistamusical WHERE id = ?");
 
-                    return ps;
-                }
-            });
-            log.info("[MUSICAL_ARTIST_DAO] MusicalArtist id: {} removed from database in " + (System.currentTimeMillis() - before) + "ms", id);
-        } catch (Exception e) {
-            log.error("[MUSICAL_ARTIST_DAO] Error removing MusicalArtist id: {}. Exception " + e, id);
-            logEx.error("Error removing MusicalArtist", e);
-        }
-    }
+			long before = System.currentTimeMillis();
+			getJdbc().update(new PreparedStatementCreator() {
+				public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
 
-    public void update(final MusicalArtist artist) {
-        try {
-            final StringBuilder sb = new StringBuilder();
-            sb.append("UPDATE artistamusical");
-            sb.append(" SET nome_artistico=?,");
-            sb.append("pais=?, ");
-            sb.append("genero=?, ");
-            sb.append("url=?, ");
-            sb.append(" WHERE id=?");
+					PreparedStatement ps = connection.prepareStatement(sb.toString());
 
-            long before = System.currentTimeMillis();
-            getJdbc().update(new PreparedStatementCreator() {
-                public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+					ps.setInt(1, id.intValue());
 
-                    PreparedStatement ps = connection.prepareStatement(sb.toString());
-                    int i = 1;
+					return ps;
+				}
+			});
+			log.info("[MUSICAL_ARTIST_DAO] MusicalArtist id: {} removed from database in " + (System.currentTimeMillis() - before) + "ms", id);
+		} catch (Exception e) {
+			log.error("[MUSICAL_ARTIST_DAO] Error removing MusicalArtist id: {}. Exception " + e, id);
+			logEx.error("Error removing MusicalArtist", e);
+		}
+	}
 
-                    ps.setString(i++, artist.getArtisticName());
+	public void update(final MusicalArtist artist) {
+		try {
+			final StringBuilder sb = new StringBuilder();
+			sb.append("UPDATE artistamusical");
+			sb.append(" SET nome_artistico=?,");
+			sb.append("pais=?, ");
+			sb.append("genero=?, ");
+			sb.append("url=?, ");
+			sb.append(" WHERE id=?");
 
-                    ps.setString(i++, artist.getCountry());
+			long before = System.currentTimeMillis();
+			getJdbc().update(new PreparedStatementCreator() {
+				public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
 
-                    ps.setString(i++, artist.getGenre());
+					PreparedStatement ps = connection.prepareStatement(sb.toString());
+					int i = 1;
 
-                    ps.setString(i++, artist.getUrl());
+					ps.setString(i++, artist.getArtisticName());
 
-                    return ps;
-                }
-            });
-            log.info("[MUSICAL_ARTIST_DAO] MusicalArtist {} updated in " + (System.currentTimeMillis() - before) + "ms", artist);
-        } catch (Exception e) {
-            log.error("[MUSICAL_ARTIST_DAO] Error updating MusicalArtist {}. Exception " + e, artist);
-            logEx.error("Error updating MusicalArtist", e);
-        }
-    }
+					ps.setString(i++, artist.getCountry());
 
-    private class MusicalArtistRowMapper implements RowMapper<Object> {
+					ps.setString(i++, artist.getGenre());
 
-        @Override
-        public Object mapRow(ResultSet resultSet, int i) throws SQLException {
+					ps.setString(i++, artist.getUrl());
 
-            MusicalArtist artist = new MusicalArtist();
-            artist.setId(new Long(resultSet.getInt("id")));
-            artist.setArtisticName(resultSet.getString("nome_artistico"));
-            artist.setCountry(resultSet.getString("pais"));
-            artist.setGenre(resultSet.getString("genero"));
-            artist.setUrl(resultSet.getString("url"));
+					return ps;
+				}
+			});
+			log.info("[MUSICAL_ARTIST_DAO] MusicalArtist {} updated in " + (System.currentTimeMillis() - before) + "ms", artist);
+		} catch (Exception e) {
+			log.error("[MUSICAL_ARTIST_DAO] Error updating MusicalArtist {}. Exception " + e, artist);
+			logEx.error("Error updating MusicalArtist", e);
+		}
+	}
 
-            return artist;
-        }
-    }
+	private class MusicalArtistRowMapper implements RowMapper<Object> {
+
+		@Override
+		public Object mapRow(ResultSet resultSet, int i) throws SQLException {
+
+			MusicalArtist artist = new MusicalArtist();
+			artist.setId(new Long(resultSet.getInt("id")));
+			artist.setArtisticName(resultSet.getString("nome_artistico"));
+			artist.setCountry(resultSet.getString("pais"));
+			artist.setGenre(resultSet.getString("genero"));
+			artist.setUrl(resultSet.getString("url"));
+
+			return artist;
+		}
+	}
 }

@@ -29,6 +29,39 @@ public class PersonBO {
 		return people == null ? new ArrayList<Person>() : people;
 	}
 
+	public void setColleaguesForPersonWithId(Long personId, List<Long> newColleaguesIds) {
+		removeOldColleagues(personId);
+		addNewColleagues(personId, newColleaguesIds);
+	}
+
+	protected void addNewColleagues(Long personId, List<Long> newColleaguesIds) {
+		if (newColleaguesIds == null)
+			return;
+
+		for (Long colleagueId : newColleaguesIds)
+			try {
+				colleagueDAO.insert(personId, colleagueId);
+			} catch (SQLException e) {
+				logEx.error("[TCBook] Error inserting colleague. Exception: " + e);
+				e.printStackTrace();
+			}
+	}
+
+	protected void removeOldColleagues(Long personId) {
+		List<Long> colleagueIds = colleagueDAO.findAllForId(personId);
+
+		if (colleagueIds == null)
+			return;
+
+		for (Long colleagueId : colleagueIds)
+			try {
+				colleagueDAO.remove(personId, colleagueId);
+			} catch (SQLException e) {
+				logEx.error("[TCBook] Error removing colleague. Exception: " + e);
+				e.printStackTrace();
+			}
+	}
+
 	public List<Person> getColleaguesForPersonWithId(Long id) {
 		List<Long> colleagueIds = colleagueDAO.findAllForId(id);
 		List<Person> result = new ArrayList<Person>();
@@ -36,8 +69,8 @@ public class PersonBO {
 		if (colleagueIds == null)
 			return result;
 
-		for (Long personId : colleagueIds) {
-			Person p = personDAO.find(personId);
+		for (Long colleagueId : colleagueIds) {
+			Person p = personDAO.find(colleagueId);
 			if (p != null) { // should not happen, but...
 				result.add(p);
 			}
@@ -88,6 +121,7 @@ public class PersonBO {
 	}
 
 	public void setLikes(Long personId, Map<Long, Integer> likes) {
+		/* FIXME Como fazer o update dos que mudaram a nota? */
 		for (Map.Entry<Long, Integer> entry : likes.entrySet()) {
 			try {
 				personLikeMusicalArtistDAO.insert(personId, entry.getKey(), entry.getValue());

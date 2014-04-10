@@ -5,10 +5,10 @@ import java.util.List;
 
 public interface ColleagueDAO {
 
-    public List<Long> findAllForId(Long id);
+	public List<Long> findAllForId(Long id);
 
-    public void insert(Long idPerson, Long idColleague) throws SQLException;
+	public void insert(Long idPerson, Long idColleague) throws SQLException;
 
-    public void remove(Long idPerson, Long idColleague) throws SQLException;
+	public void remove(Long idPerson, Long idColleague) throws SQLException;
 
 }

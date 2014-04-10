@@ -1,5 +1,8 @@
 package com.tcbook.ws.web.rest;
 
+import java.util.List;
+import java.util.Map;
+
 import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -13,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.tcbook.ws.bean.Person;
 import com.tcbook.ws.core.bo.PersonBO;
 import com.tcbook.ws.util.TCBookConstants;
@@ -76,4 +80,32 @@ public class PeopleRS {
 		return Response.ok(new Gson().toJson(personBO.getColleaguesForPersonWithId(id))).build();
 	}
 
+	@PUT
+	@Path("/{id}/social")
+	public Response setSocialById(@PathParam("id") Long id, @FormParam("social") String colleaguesIds) {
+		logReqAnswered.info("set knows of the person " + id);
+
+		personBO.setColleaguesForPersonWithId(id, new Gson().<List<Long>>fromJson(colleaguesIds, new TypeToken<List<Long>>() {}.getType()));
+
+		return Response.ok().build();
+	}
+
+	/* TODO
+	@GET
+	@Path("/{id}/musicalArtists")
+	public Response getMusicalArtistById(@PathParam("id") Long id) {
+		logReqAnswered.info("get musicals artists of the person " + id);
+
+		return Response.ok(new Gson().toJson(personBO.getMusicalsArtistsForPersonWithId(id))).build();
+	}*/
+
+	@PUT
+	@Path("/{id}/musicalArtist")
+	public Response setMusicalArtistById(@PathParam("id") Long id, @FormParam("artists") String artistsIds) {
+		logReqAnswered.info("set musicals Artists of the person " + id);
+
+		personBO.setLikes(id, new Gson().<Map<Long, Integer>>fromJson(artistsIds, new TypeToken<Map<Long, Integer>>() {}.getType()));
+
+		return Response.ok().build();
+	}
 }
