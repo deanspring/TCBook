@@ -2,7 +2,6 @@ package com.tcbook.ws.web.rest;
 
 import com.google.gson.Gson;
 import com.tcbook.ws.core.bo.PersonBO;
-import com.tcbook.ws.database.dao.PeopleDAOImpl;
 import com.tcbook.ws.util.TCBookConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
