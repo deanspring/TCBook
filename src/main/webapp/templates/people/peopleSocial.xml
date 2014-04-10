@@ -1,0 +1,57 @@
+<div>
+	<h1>
+		Quem {{=it.person.name}} conhece
+		<a class="btn btn-primary btn-sm float-right go-back-people-list" role="button">Voltar</a>
+	</h1>
+	<form role="form">
+		<table class="table table-striped table-hover">
+			<thead>
+				<tr class="panel-default">
+					<th class="panel-heading">Conhece</th>
+					<th class="panel-heading">#</th>
+					<th class="panel-heading">Nome</th>
+					<th class="panel-heading">Login</th>
+					<th class="panel-heading">Cidade natal</th>
+					<th class="panel-heading">URL</th>
+				</tr>
+			</thead>
+			<tbody>
+			{{~it.people :person}}
+				{{? person.id != it.person.id}}
+				<tr>
+					<td><input type="checkbox" value="{{=person.id}}"/></td>
+					<td>{{=person.id}}</td>
+					<td>{{=person.name}}</td>
+					<td>{{=person.login}}</td>
+					<td>{{=person.hometown}}</td>
+					<td>{{=person.url}}</td>
+				</tr>
+				{{?}}
+			{{~}}
+			</tbody>
+		</table>
+		<input type="button" class="btn btn-default" value="Salvar" data-id="{{=it.person.id || ''}}"/>
+	</form>
+	<script>
+		$('.person-form').slideDown();
+		$('.go-back-people-list').click(function() {
+			$('.person-form').slideUp(function() {
+				$('.people-list').slideDown();
+				$(this).empty();
+			});
+		});
+
+		$('.person-form input[type="button"]').click(function() {
+			var id = $(this).data('id');
+			var data = {};
+			$.ajax({
+				type : 'PUT',
+				url : 's/people/' + id + '/social',
+				data : {social : JSON.stringify(data)},
+				success : function() {
+					people.load();
+				}
+			});
+		});
+	</script>
+</div>

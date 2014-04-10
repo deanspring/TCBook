@@ -30,7 +30,6 @@
 		});
 	};
 
-	
 	people = {};
 
 	people.load = function() {

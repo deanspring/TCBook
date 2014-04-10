@@ -1,0 +1,62 @@
+<div>
+	<h1>
+		{{? it.person.id}}
+			Editar {{=it.person.name}}
+		{{??}}
+			Nova pessoa
+		{{?}}
+		<a class="btn btn-primary btn-sm float-right go-back-people-list" role="button">Voltar</a>
+	</h1>
+	<form class="col-md-3" role="form">
+		<div class="form-group">
+			<label for="name">Nome</label>
+			<input type="text" class="form-control" id="name" placeholder="Nome" value="{{=it.person.name || ''}}"/>
+		</div>
+		<div class="form-group">
+			<label for="login">Login</label>
+			<input type="text" class="form-control" id="login" placeholder="Login unico" value="{{=it.person.login || ''}}"/>
+		</div>
+		<div class="form-group">
+			<label for="hometown">Cidade natal</label>
+			<input type="text" class="form-control" id="hometown" placeholder="Cidade natal" value="{{=it.person.hometown || ''}}"/>
+		</div>
+		<div class="form-group">
+			<label for="url">Url</label>
+			<input type="text" class="form-control" id="url" placeholder="Url" value="{{=it.person.url || ''}}"/>
+		</div>
+		<input type="button" class="btn btn-default" value="Salvar" data-id="{{=it.person.id || ''}}"/>
+	</form>
+	<script>
+		$('.person-form').slideDown();
+		$('.go-back-people-list').click(function() {
+			$('.person-form').slideUp(function() {
+				$('.people-list').slideDown();
+				$(this).empty();
+			});
+		});
+
+		$('.person-form input[type="button"]').click(function() {
+			var id = $(this).data('id');
+			var data = {};
+			if (id)
+				data.id = id;
+			if ($('#name').val())
+				data.name = $('#name').val();
+			if ($('#login').val())
+				data.login = $('#login').val();
+			if ($('#hometown').val())
+				data.hometown = $('#hometown').val();
+			if ($('#url').val())
+				data.url = $('#url').val();
+			$.ajax({
+				type : id ? 'PUT' : 'POST',
+				url : 's/people/' + (id ? id : ''),
+				data : {person : JSON.stringify(data)},
+				success : function() {
+					people.load();
+				}
+			});
+		});
+		
+	</script>
+</div>

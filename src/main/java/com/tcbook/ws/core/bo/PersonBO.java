@@ -33,6 +33,9 @@ public class PersonBO {
 		List<Long> colleagueIds = colleagueDAO.findAllForId(id);
 		List<Person> result = new ArrayList<Person>();
 
+		if (colleagueIds == null)
+			return result;
+
 		for (Long personId : colleagueIds) {
 			Person p = personDAO.find(personId);
 			if (p != null) { // should not happen, but...

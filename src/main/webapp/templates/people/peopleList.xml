@@ -1,29 +1,5 @@
 <div>
-	<div class="new-person-form">
-		<h1>
-			Nova pessoa
-			<a class="btn btn-primary btn-sm float-right go-back-people-list" role="button">Voltar</a>
-		</h1>
-		<form class="col-row-3" role="form">
-			<div class="form-group">
-				<label for="name">Nome</label>
-				<input type="text" class="form-control" id="name" placeholder="Nome"/>
-			</div>
-			<div class="form-group">
-				<label for="login">Login</label>
-				<input type="text" class="form-control" id="login" placeholder="Login unico"/>
-			</div>
-			<div class="form-group">
-				<label for="hometown">Cidade natal</label>
-				<input type="text" class="form-control" id="hometown" placeholder="Cidade natal"/>
-			</div>
-			<div class="form-group">
-				<label for="url">Url</label>
-				<input type="text" class="form-control" id="url" placeholder="Url"/>
-			</div>
-			<input type="button" class="btn btn-default" value="Salvar"/>
-		</form>
-	</div>
+	<div class="person-form"></div>
 	<div class="people-list">
 		<h1>
 			Lista de pessoas
@@ -52,9 +28,10 @@
 					<td>{{=person.hometown}}</td>
 					<td>{{=person.url}}</td>
 					<td>
-						<i class="glyphicon glyphicon-edit edit-person"></i>
-						<i class="glyphicon glyphicon-remove remove-person margin-left"></i>
-						</td>
+						<i class="glyphicon glyphicon-edit edit-person" title="Editar cadastro básico" data-toggle="tooltip"></i>
+						<i class="glyphicon glyphicon-user persons-social margin-left" title="Editar lista de conhecidos" data-toggle="tooltip"></i>
+						<i class="glyphicon glyphicon-remove remove-person margin-left" title="Excluir" data-toggle="tooltip"></i>
+					</td>
 				</tr>
 				{{~}}
 			</tbody>
@@ -62,60 +39,55 @@
 		{{?}}
 	</div>
 	<script>
+		$('[title]').tooltip();
 		$('.new-person').click(function() {
 			$('.people-list').slideUp(function() {
-				$('.new-person-form').slideDown();
-			});
-		});
-		$('.go-back-people-list').click(function() {
-			$('.new-person-form').slideUp(function() {
-				$('.people-list').slideDown();
+				$.loadTemplate('templates/people/peopleNew.xml', '.person-form', {person : {}});
 			});
 		});
 
-		$('.new-person-form input[type="button"]').click(function() {
-			var id = $(this).data('id');
-			var data = {};
-			if (id)
-				data.id = id;
-			if ($('#name').val())
-				data.name = $('#name').val();
-			if ($('#login').val())
-				data.login = $('#login').val();
-			if ($('#hometown').val())
-				data.hometown = $('#hometown').val();
-			if ($('#url').val())
-				data.url = $('#url').val();
-			$.ajax({
-				type : id ? 'PUT' : 'POST',
-				url : 's/people/' + (id ? id : ''),
-				data : {person : JSON.stringify(data)},
-				success : function() {
-					people.load();
-				}
-			});
-		});
+		var getPerson = function($this) {
+			var tds = $this.parent().siblings();
+			return {
+				id : tds.eq(0).text(),
+				name : tds.eq(1).text(),
+				login : tds.eq(2).text(),
+				hometown : tds.eq(3).text(),
+				url : tds.eq(4).text()
+			};
+		};
 
 		$('.edit-person').click(function() {
+			var that = $(this);
 			$('.people-list').slideUp(function() {
-				$('.new-person-form').slideDown();
+				$.loadTemplate('templates/people/peopleNew.xml', '.person-form', {person : getPerson(that)});
 			});
 
-			var tds = $(this).parent().siblings();
-			$('.new-person-form input[type="button"]').data('id', tds.eq(0).text());
-			$('#name').val(tds.eq(1).text());
-			$('#login').val(tds.eq(2).text());
-			$('#hometown').val(tds.eq(3).text());
-			$('#url').val(tds.eq(4).text());
+		});
+
+		$('.persons-social').click(function() {
+			var person = getPerson($(this));
+			$.getJSON('s/people/' + person.id + '/social', function(social) {
+				$.getJSON('s/people/', function(people) {
+					$('.people-list').slideUp(function() {
+						$.loadTemplate('templates/people/peopleSocial.xml', '.person-form', {person : person, social : social, people : people}, function() {
+							for (var i = 0; social.length > i; i++)
+								$('.person-form :input:checkbox[value="' + social[i].id + '"]').click();
+						});
+					});
+				});
+			})
 		});
 
 		$('.remove-person').click(function() {
-			$.ajax({
-				type : 'DELETE',
-				url : 's/people/' + $(this).parent().siblings().first().text(),
-				success : function() {
-					people.load();
-				}
+			$(this).parent().parent().fadeOut(function() {
+				$.ajax({
+					type : 'DELETE',
+					url : 's/people/' + $(this).children().first().text(),
+					success : function() {
+						people.load();
+					}
+				});
 			});
 		});
 	</script>

@@ -68,4 +68,12 @@ public class PeopleRS {
 		return Response.ok().build();
 	}
 
+	@GET
+	@Path("/{id}/social")
+	public Response getSocialById(@PathParam("id") Long id) {
+		logReqAnswered.info("get knows of the person " + id);
+
+		return Response.ok(new Gson().toJson(personBO.getColleaguesForPersonWithId(id))).build();
+	}
+
 }
