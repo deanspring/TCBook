@@ -4,6 +4,8 @@ body { padding-top: 70px; }
 
 .margin-top {margin-top: 12px;}
 .margin-bottom {margin-bottom: 12px;}
+.margin-left {margin-left: 12px;}
+.margin-right {margin-right: 12px;}
 
 .float-left {float: left;}
 .float-right {float: right;}

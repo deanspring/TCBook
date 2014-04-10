@@ -51,7 +51,7 @@ public class PersonDAOImpl extends DAO implements PersonDAO {
 		try {
 			final StringBuilder sb = new StringBuilder();
 			sb.append("SELECT * FROM Pessoa");
-			sb.append(" WHERE id=? LIMIT 1");
+			sb.append(" WHERE id=? AND ativa = 1 LIMIT 1");
 
 			long before = System.currentTimeMillis();
 			result = (Person) getJdbc().queryForObject(sb.toString(), new Object[] { id }, new PersonRowMapper());
@@ -68,7 +68,7 @@ public class PersonDAOImpl extends DAO implements PersonDAO {
 		List<Person> result = null;
 		try {
 			final StringBuilder sb = new StringBuilder();
-			sb.append("SELECT * FROM Pessoa");
+			sb.append("SELECT * FROM Pessoa WHERE ativa = 1");
 
 			long before = System.currentTimeMillis();
 			List<Map<String, Object>> rows = getJdbc().queryForList(sb.toString());
@@ -210,7 +210,8 @@ public class PersonDAOImpl extends DAO implements PersonDAO {
 			sb.append(" SET login=?,");
 			sb.append("uri=?, ");
 			sb.append("nome=?, ");
-			sb.append("cidade_natal=? ");
+			sb.append("cidade_natal=?, ");
+			sb.append("ativa=? ");
 			sb.append(" WHERE id=?");
 
 			long before = System.currentTimeMillis();
@@ -221,13 +222,10 @@ public class PersonDAOImpl extends DAO implements PersonDAO {
 					int i = 1;
 
 					ps.setString(i++, person.getLogin());
-
 					ps.setString(i++, person.getUrl());
-
 					ps.setString(i++, person.getName());
-
 					ps.setString(i++, person.getHometown());
-
+					ps.setBoolean(i++, person.getEnabled());
 					ps.setLong(i++, person.getId());
 
 					return ps;

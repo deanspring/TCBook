@@ -1,5 +1,6 @@
 package com.tcbook.ws.web.rest;
 
+import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -56,4 +57,15 @@ public class PeopleRS {
 
 		return Response.ok(new Gson().toJson(personBO.getPerson(id))).build();
 	}
+
+	@DELETE
+	@Path("/{id}")
+	public Response removeById(@PathParam("id") Long id) {
+		logReqAnswered.info("delete person " + id);
+
+		personBO.disable(id);
+
+		return Response.ok().build();
+	}
+
 }

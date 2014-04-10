@@ -40,7 +40,7 @@
 					<th class="panel-heading">Login</th>
 					<th class="panel-heading">Cidade natal</th>
 					<th class="panel-heading">URL</th>
-					<th class="panel-heading">Editar</th>
+					<th class="panel-heading"></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -51,7 +51,10 @@
 					<td>{{=person.login}}</td>
 					<td>{{=person.hometown}}</td>
 					<td>{{=person.url}}</td>
-					<td><i class="glyphicon glyphicon-edit edit-person"></i></td>
+					<td>
+						<i class="glyphicon glyphicon-edit edit-person"></i>
+						<i class="glyphicon glyphicon-remove remove-person margin-left"></i>
+						</td>
 				</tr>
 				{{~}}
 			</tbody>
@@ -104,6 +107,16 @@
 			$('#login').val(tds.eq(2).text());
 			$('#hometown').val(tds.eq(3).text());
 			$('#url').val(tds.eq(4).text());
+		});
+
+		$('.remove-person').click(function() {
+			$.ajax({
+				type : 'DELETE',
+				url : 's/people/' + $(this).parent().siblings().first().text(),
+				success : function() {
+					people.load();
+				}
+			});
 		});
 	</script>
 </div>
