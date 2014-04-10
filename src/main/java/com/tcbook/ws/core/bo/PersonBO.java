@@ -1,16 +1,14 @@
 package com.tcbook.ws.core.bo;
 
 import com.tcbook.ws.bean.Person;
-import com.tcbook.ws.database.dao.ColleagueDAO;
-import com.tcbook.ws.database.dao.ColleagueDAOImpl;
-import com.tcbook.ws.database.dao.PersonDAO;
-import com.tcbook.ws.database.dao.PersonDAOImpl;
+import com.tcbook.ws.database.dao.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by caiouvini on 4/9/14.
@@ -21,6 +19,7 @@ public class PersonBO {
 
     private PersonDAO personDAO = PersonDAOImpl.getInstance();
     private ColleagueDAO colleagueDAO = ColleagueDAOImpl.getInstance();
+    private PersonLikeMusicalArtistDAO personLikeMusicalArtistDAO = PersonLikeMusicalArtistDAOImpl.getInstance();
 
     public List<Person> getAll() {
         return personDAO.findAll();
@@ -60,6 +59,16 @@ public class PersonBO {
                 personDAO.update(p);
             } catch (SQLException e) {
                 logEx.error("[TCBook] Error disabling person. Exception: " + e);
+            }
+        }
+    }
+
+    public void setLikes(Long personId, Map<Long, Integer> likes) {
+        for (Map.Entry<Long, Integer> entry : likes.entrySet()) {
+            try {
+                personLikeMusicalArtistDAO.insert(personId, entry.getKey(), entry.getValue());
+            } catch (SQLException e) {
+                logEx.error("[TCBook] Error registering person's like. Exception: " + e);
             }
         }
     }
