@@ -3,7 +3,7 @@
 	var mainContainer = $('body > .container');
 
 	$(document).ready(function() {
-		$('.navbar a').click(function () {
+		$('.navbar a, [role="main"] .jumbotron a').click(function () {
 			if ($(this).data('toggle') || $(this).attr('href').substring(1) === mainContainer.find('.active').attr('id'))
 				return;
 
@@ -18,8 +18,6 @@
 				});
 			});
 		});
-
-		
 	});
 
 	$.loadTemplate = function(url, selector, context, callback) {

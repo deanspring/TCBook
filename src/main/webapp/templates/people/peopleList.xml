@@ -1,3 +1,31 @@
 <div>
-{{=it.people.length}}
+	<h1>
+		Lista de pessoas
+		<a class="btn btn-primary btn-sm float-right" role="button">Incluir nova pessoa</a>
+	</h1>
+	<div>
+	{{? it.people.length == 0}}
+		<i> Sem pessoas cadastradas</i>
+	{{??}}
+		<div class="panel-default"></div>
+		<table class="table">
+			<thead>
+				<th class="panel-heading">#</th>
+				<th class="panel-heading">Nome</th>
+				<th class="panel-heading">Login</th>
+				<th class="panel-heading">Cidade natal</th>
+			</thead>
+			<tbody>
+			{{~it.people :person}}
+				<tr>
+					<td>{{=person.id}}</td>
+					<td>{{=person.name}}</td>
+					<td>{{=person.login}}</td>
+					<td>{{=person.hometown}}</td>
+				</tr>
+			{{~}}
+			</tbody>
+		</table>
+	{{?}}
+	</div>
 </div>
