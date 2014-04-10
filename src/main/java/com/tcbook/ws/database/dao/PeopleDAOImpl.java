@@ -17,241 +17,240 @@ import java.util.Map;
 
 public class PeopleDAOImpl extends DAO implements PeopleDAO {
 
-    private static PeopleDAOImpl instance;
+	private static PeopleDAOImpl instance;
 
-    private static final String DB_ALIAS = "TCBOOK_DB";
+	private static final String DB_ALIAS = "TCBOOK_DB";
 
-    private static Logger log = LoggerFactory.getLogger(TCBookConstants.LOG_NAME_DAO);
-    private static Logger logEx = LoggerFactory.getLogger(TCBookConstants.LOG_NAME_EXCEPTIONS);
+	private static Logger log = LoggerFactory.getLogger(TCBookConstants.LOG_NAME_DAO);
+	private static Logger logEx = LoggerFactory.getLogger(TCBookConstants.LOG_NAME_EXCEPTIONS);
 
-    private PeopleDAOImpl() {
-        super();
-    }
+	private PeopleDAOImpl() {
+		super();
+	}
 
-    public static PeopleDAOImpl getInstance() {
-        if (instance == null) {
-            instance = new PeopleDAOImpl();
-        }
-        return instance;
-    }
+	public static PeopleDAOImpl getInstance() {
+		if (instance == null) {
+			instance = new PeopleDAOImpl();
+		}
+		return instance;
+	}
 
-    @Override
-    protected String getDatabaseAlias() {
-        return DB_ALIAS;
-    }
+	@Override
+	protected String getDatabaseAlias() {
+		return DB_ALIAS;
+	}
 
-    @Override
-    protected DataSourceType getDataSourceType() {
-        return DataSourceType.valueOf(TCBookProperties.getInstance().getString("tcbook.db.type"));
-    }
+	@Override
+	protected DataSourceType getDataSourceType() {
+		return DataSourceType.valueOf(TCBookProperties.getInstance().getString("tcbook.db.type"));
+	}
 
-    @Override
-    public People find(final Long id) {
-        People result = null;
-        try {
-            final StringBuilder sb = new StringBuilder();
-            sb.append("SELECT * FROM pessoa");
-            sb.append(" WHERE id=? LIMIT 1");
+	@Override
+	public People find(final Long id) {
+		People people = null;
+		try {
+			final StringBuilder sb = new StringBuilder();
+			sb.append("SELECT * FROM Pessoa");
+			sb.append(" WHERE id=? LIMIT 1");
 
-            long before = System.currentTimeMillis();
-            result = (People) getJdbc().queryForObject(sb.toString(), new Object[]{id}, new PeopleRowMapper());
-            log.info("[PEOPLE_DAO] People {} found in database in " + (System.currentTimeMillis() - before) + "ms", result);
-        } catch (Exception e) {
-            log.error("[PEOPLE_DAO] Error searching People id: {}. Exception " + e, id);
-            logEx.error("Error searching People", e);
-        }
-        return result;
-    }
+			long before = System.currentTimeMillis();
+			people = (People) getJdbc().queryForObject(sb.toString(), new Object[] { id }, new PeopleRowMapper());
+			log.info("[PEOPLE_DAO] People {} found in database in " + (System.currentTimeMillis() - before) + "ms", people);
+		} catch (Exception e) {
+			log.error("[PEOPLE_DAO] Error searching People id: {}. Exception " + e, id);
+			logEx.error("Error searching People", e);
+		}
 
-    @Override
-    public List<People> findAll() {
-        List<People> result = null;
-        try {
-            final StringBuilder sb = new StringBuilder();
-            sb.append("SELECT * FROM pessoa");
+		return people == null ? new People() : people;
+	}
 
-            long before = System.currentTimeMillis();
-            List<Map<String, Object>> rows = getJdbc().queryForList(sb.toString());
-            result = new ArrayList<People>();
+	@Override
+	public List<People> findAll() {
+		List<People> allPeople = null;
 
-            for (Map<String, Object> row : rows) {
-                People people = new People();
-                people.setId(new Long((Integer) row.get("id")));
-                people.setName(row.get("nome").toString());
-                people.setUrl(row.get("uri").toString());
-                people.setLogin(row.get("login").toString());
-                people.setHometown(row.get("cidade_natal") != null ? row.get("cidade_natal").toString() : null);
-                result.add(people);
-            }
+		try {
+			final StringBuilder sb = new StringBuilder();
+			sb.append("SELECT * FROM Pessoa");
 
-            log.info("[PEOPLE_DAO] All People found in database in " + (System.currentTimeMillis() - before) + "ms");
-        } catch (Exception e) {
-            log.error("[PEOPLE_DAO] Error searching for all People. Exception " + e);
-            logEx.error("Error searching for all People", e);
-        }
-        return result;
-    }
+			long before = System.currentTimeMillis();
+			List<Map<String, Object>> rows = getJdbc().queryForList(sb.toString());
+			allPeople = new ArrayList<People>();
 
-    @Override
-    public void insert(final People people) throws SQLException {
-        try {
-            final StringBuilder sb = new StringBuilder();
-            sb.append("INSERT INTO pessoa");
-            sb.append(" (login,");
-            sb.append("uri,");
-            sb.append("nome,");
-            sb.append("cidade_natal)");
-            sb.append(" VALUES (?,?,?,?)");
+			for (Map<String, Object> row : rows) {
+				People people = new People();
+				people.setId(new Long((Integer) row.get("id")));
+				people.setName(row.get("nome").toString());
+				people.setUrl(row.get("uri").toString());
+				people.setLogin(row.get("login").toString());
+				people.setHometown(row.get("cidade_natal") != null ? row.get("cidade_natal").toString() : null);
+				allPeople.add(people);
+			}
 
-            long before = System.currentTimeMillis();
-            getJdbc().update(new PreparedStatementCreator() {
-                public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+			log.info("[PEOPLE_DAO] All People found in database in " + (System.currentTimeMillis() - before) + "ms");
+		} catch (Exception e) {
+			log.error("[PEOPLE_DAO] Error searching for all People. Exception " + e);
+			logEx.error("Error searching for all People", e);
+		}
 
-                    PreparedStatement ps = connection.prepareStatement(sb.toString());
-                    int i = 1;
+		return allPeople == null ? new ArrayList<People>() : allPeople;
+	}
 
+	@Override
+	public void insert(final People people) throws SQLException {
+		try {
+			final StringBuilder sb = new StringBuilder();
+			sb.append("INSERT INTO Pessoa");
+			sb.append(" (login,");
+			sb.append("uri,");
+			sb.append("nome,");
+			sb.append("cidade_natal)");
+			sb.append(" VALUES (?,?,?,?)");
 
-                    ps.setString(i++, people.getLogin());
+			long before = System.currentTimeMillis();
+			getJdbc().update(new PreparedStatementCreator() {
+				public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
 
-                    ps.setString(i++, people.getUrl());
+					PreparedStatement ps = connection.prepareStatement(sb.toString());
+					int i = 1;
 
-                    ps.setString(i++, people.getName());
+					ps.setString(i++, people.getLogin());
 
-                    if (StringUtils.isBlank(people.getHometown())) {
-                        ps.setNull(i++, Types.VARCHAR);
-                    } else {
-                        ps.setString(i++, people.getHometown());
-                    }
+					ps.setString(i++, people.getUrl());
 
-                    return ps;
-                }
-            });
-            log.info("[PEOPLE_DAO] People {} inserted in database in " + (System.currentTimeMillis() - before) + "ms", people);
-        } catch (Exception e) {
-            log.error("[PEOPLE_DAO] Error persisting People {}. Exception " + e, people);
-            logEx.error("Error persisting People", e);
-        }
-    }
+					ps.setString(i++, people.getName());
 
-    @Override
-    public void remove(final Long id) {
-        try {
-            final StringBuilder sb = new StringBuilder();
-            sb.append("DELETE FROM pessoa WHERE id = ?");
+					if (StringUtils.isBlank(people.getHometown())) {
+						ps.setNull(i++, Types.VARCHAR);
+					} else {
+						ps.setString(i++, people.getHometown());
+					}
 
-            long before = System.currentTimeMillis();
-            getJdbc().update(new PreparedStatementCreator() {
-                public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+					return ps;
+				}
+			});
+			log.info("[PEOPLE_DAO] People {} inserted in database in " + (System.currentTimeMillis() - before) + "ms", people);
+		} catch (Exception e) {
+			log.error("[PEOPLE_DAO] Error persisting People {}. Exception " + e, people);
+			logEx.error("Error persisting People", e);
+		}
+	}
 
-                    PreparedStatement ps = connection.prepareStatement(sb.toString());
+	@Override
+	public void remove(final Long id) {
+		try {
+			final StringBuilder sb = new StringBuilder();
+			sb.append("DELETE FROM pessoa WHERE id = ?");
 
-                    ps.setInt(1, id.intValue());
+			long before = System.currentTimeMillis();
+			getJdbc().update(new PreparedStatementCreator() {
+				public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
 
-                    return ps;
-                }
-            });
-            log.info("[PEOPLE_DAO] People id: {} removed from database in " + (System.currentTimeMillis() - before) + "ms", id);
-        } catch (Exception e) {
-            log.error("[PEOPLE_DAO] Error removing People id: {}. Exception " + e, id);
-            logEx.error("Error removing People", e);
-        }
-    }
+					PreparedStatement ps = connection.prepareStatement(sb.toString());
 
-    @Override
-    public void removeColleaguesForPeople(final Long id) throws SQLException {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("DELETE FROM conhece WHERE id_pessoa = ? OR id_conhecido = ?");
+					ps.setInt(1, id.intValue());
 
-        long before = System.currentTimeMillis();
-        getJdbc().update(new PreparedStatementCreator() {
-            public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+					return ps;
+				}
+			});
+			log.info("[PEOPLE_DAO] People id: {} removed from database in " + (System.currentTimeMillis() - before) + "ms", id);
+		} catch (Exception e) {
+			log.error("[PEOPLE_DAO] Error removing People id: {}. Exception " + e, id);
+			logEx.error("Error removing People", e);
+		}
+	}
 
-                PreparedStatement ps = connection.prepareStatement(sb.toString());
-                int i = 1;
+	@Override
+	public void removeColleaguesForPeople(final Long id) throws SQLException {
+		final StringBuilder sb = new StringBuilder();
+		sb.append("DELETE FROM conhece WHERE id_pessoa = ? OR id_conhecido = ?");
 
-                ps.setInt(i++, id.intValue());
+		long before = System.currentTimeMillis();
+		getJdbc().update(new PreparedStatementCreator() {
+			public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
 
-                ps.setInt(i++, id.intValue());
+				PreparedStatement ps = connection.prepareStatement(sb.toString());
+				int i = 1;
 
+				ps.setInt(i++, id.intValue());
 
-                return ps;
-            }
-        });
-        log.info("[PEOPLE_DAO] People id: {} colleagues deleted from database in " + (System.currentTimeMillis() - before) + "ms", id);
-    }
+				ps.setInt(i++, id.intValue());
 
-    @Override
-    public void removeBlockingsForPeople(final Long id) {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("DELETE FROM bloqueio WHERE id_pessoa = ? OR id_bloqueado = ?");
+				return ps;
+			}
+		});
+		log.info("[PEOPLE_DAO] People id: {} colleagues deleted from database in " + (System.currentTimeMillis() - before) + "ms", id);
+	}
 
-        long before = System.currentTimeMillis();
-        getJdbc().update(new PreparedStatementCreator() {
-            public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+	@Override
+	public void removeBlockingsForPeople(final Long id) {
+		final StringBuilder sb = new StringBuilder();
+		sb.append("DELETE FROM bloqueio WHERE id_pessoa = ? OR id_bloqueado = ?");
 
-                PreparedStatement ps = connection.prepareStatement(sb.toString());
-                int i = 1;
+		long before = System.currentTimeMillis();
+		getJdbc().update(new PreparedStatementCreator() {
+			public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
 
+				PreparedStatement ps = connection.prepareStatement(sb.toString());
+				int i = 1;
 
-                ps.setInt(i++, id.intValue());
+				ps.setInt(i++, id.intValue());
 
-                ps.setInt(i++, id.intValue());
+				ps.setInt(i++, id.intValue());
 
+				return ps;
+			}
+		});
+		log.info("[PEOPLE_DAO] People id: {} blockings deleted from database in " + (System.currentTimeMillis() - before) + "ms", id);
+	}
 
-                return ps;
-            }
-        });
-        log.info("[PEOPLE_DAO] People id: {} blockings deleted from database in " + (System.currentTimeMillis() - before) + "ms", id);
-    }
+	public void update(final People people) {
+		try {
+			final StringBuilder sb = new StringBuilder();
+			sb.append("UPDATE Pessoa");
+			sb.append(" SET login=?,");
+			sb.append("uri=?, ");
+			sb.append("nome=?, ");
+			sb.append("cidade_natal=?, ");
+			sb.append(" WHERE id=?");
 
-    public void update(final People people) {
-        try {
-            final StringBuilder sb = new StringBuilder();
-            sb.append("UPDATE pessoa");
-            sb.append(" SET login=?,");
-            sb.append("uri=?, ");
-            sb.append("nome=?, ");
-            sb.append("cidade_natal=?, ");
-            sb.append(" WHERE id=?");
+			long before = System.currentTimeMillis();
+			getJdbc().update(new PreparedStatementCreator() {
+				public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
 
-            long before = System.currentTimeMillis();
-            getJdbc().update(new PreparedStatementCreator() {
-                public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+					PreparedStatement ps = connection.prepareStatement(sb.toString());
+					int i = 1;
 
-                    PreparedStatement ps = connection.prepareStatement(sb.toString());
-                    int i = 1;
+					ps.setString(i++, people.getLogin());
 
-                    ps.setString(i++, people.getLogin());
+					ps.setString(i++, people.getUrl());
 
-                    ps.setString(i++, people.getUrl());
+					ps.setString(i++, people.getName());
 
-                    ps.setString(i++, people.getName());
+					ps.setString(i++, people.getHometown());
 
-                    ps.setString(i++, people.getHometown());
+					return ps;
+				}
+			});
+			log.info("[PEOPLE_DAO] People {} updated in " + (System.currentTimeMillis() - before) + "ms", people);
+		} catch (Exception e) {
+			log.error("[PEOPLE_DAO] Error updating People {}. Exception " + e, people);
+			logEx.error("Error updating People", e);
+		}
+	}
 
-                    return ps;
-                }
-            });
-            log.info("[PEOPLE_DAO] People {} updated in " + (System.currentTimeMillis() - before) + "ms", people);
-        } catch (Exception e) {
-            log.error("[PEOPLE_DAO] Error updating People {}. Exception " + e, people);
-            logEx.error("Error updating People", e);
-        }
-    }
+	private class PeopleRowMapper implements RowMapper<Object> {
 
-    private class PeopleRowMapper implements RowMapper<Object> {
+		@Override
+		public Object mapRow(ResultSet resultSet, int i) throws SQLException {
 
-        @Override
-        public Object mapRow(ResultSet resultSet, int i) throws SQLException {
+			People people = new People();
+			people.setId(new Long(resultSet.getInt("id")));
+			people.setLogin(resultSet.getString("login"));
+			people.setName(resultSet.getString("nome"));
+			people.setUrl(resultSet.getString("uri"));
+			people.setHometown(resultSet.getString("cidade_natal"));
 
-            People people = new People();
-            people.setId(new Long(resultSet.getInt("id")));
-            people.setLogin(resultSet.getString("login"));
-            people.setName(resultSet.getString("nome"));
-            people.setUrl(resultSet.getString("uri"));
-            people.setHometown(resultSet.getString("cidade_natal"));
-
-            return people;
-        }
-    }
+			return people;
+		}
+	}
 }

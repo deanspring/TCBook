@@ -4,3 +4,5 @@ body { padding-top: 70px; }
 
 .margin-top {margin-top: 12px;}
 .margin-bottom {margin-bottom: 12px;}
+
+.row:not([role="main"]) {display: none;}

@@ -10,16 +10,16 @@ import javax.ws.rs.Path;
 @Path("/general")
 public class GeneralRequestHandler {
 
-    private static Logger logReqAnswered = LoggerFactory.getLogger(TCBookConstants.LOG_NAME_REQUESTS_ANSWERED);
+	private static Logger logReqAnswered = LoggerFactory.getLogger(TCBookConstants.LOG_NAME_REQUESTS_ANSWERED);
 
-    public GeneralRequestHandler() {
-    }
+	public GeneralRequestHandler() {
+	}
 
-    @GET
-    @Path("ping")
-    public String handlePing() {
-        logReqAnswered.info("Answered ping.");
-        return "OK";
-    }
+	@GET
+	@Path("ping")
+	public String handlePing() {
+		logReqAnswered.info("Answered ping.");
+		return "OK";
+	}
 
 }
