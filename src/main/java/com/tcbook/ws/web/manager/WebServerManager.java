@@ -77,7 +77,7 @@ public class WebServerManager implements Runnable {
 		tcbookServletHolder.setInitParameter("com.sun.jersey.config.property.packages", "com.tcbook.ws.web.rest");
 
 		ServletContextHandler servletContext = new ServletContextHandler(ServletContextHandler.SESSIONS);
-		servletContext.addServlet(tcbookServletHolder, "/tcbook/s/*");
+		servletContext.addServlet(tcbookServletHolder, "/*");
 		servletContext.setContextPath("/tcbook/s");
 
 		servletContext.setConnectorNames(new String[] {connector.getName()});

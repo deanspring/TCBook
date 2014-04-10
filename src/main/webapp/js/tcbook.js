@@ -5,7 +5,10 @@
 	$(document).ready(function() {
 		$('a[href="#pessoas"]').click(function() {
 			main.find('.active').slideUp().removeClass('active');
-			main.find('.pessoas').slideDown().addClass('active');
+
+			$.getJSON('s/pessoas/', function(pessoas) {
+				main.find('.pessoas').slideDown().addClass('active');
+			});
 		});
 	});
 
