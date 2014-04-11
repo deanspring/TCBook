@@ -27,3 +27,9 @@ TCBook/src/main/java/: diretório contendo o código fonte do back-end (Java)
 	  	- Classe responsável por inicializar o servidor Jetty embutido
 	  - web.rest:
 	  	- Classes responsáveis por responder as requisições recebidas. Relativas à monitoramento, operações com artistas musicais e operações sobre pessoa
+
+- Frontend:
+	- Utilizamos os frameworks bootstrap: http://getbootstrap.com/ para questões de css e html.
+	- Para que o "sistema" seja single page (carrega uma unica vez um .html) fizemos carregamentos assincronos (ajax) de templates doT. http://olado.github.io/doT/index.html
+	- Para manipulação do dom, usamos jQuery: http://api.jquery.com/
+	- Para comunicação client-side, server-side utilizamos o protocolo JSON http://www.json.org/
