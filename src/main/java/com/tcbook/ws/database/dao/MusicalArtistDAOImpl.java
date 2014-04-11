@@ -52,7 +52,7 @@ public class MusicalArtistDAOImpl extends DAO implements MusicalArtistDAO {
 		MusicalArtist result = null;
 		try {
 			final StringBuilder sb = new StringBuilder();
-			sb.append("SELECT * FROM artistamusical");
+			sb.append("SELECT * FROM ArtistaMusical");
 			sb.append(" WHERE id=? LIMIT 1");
 
 			long before = System.currentTimeMillis();

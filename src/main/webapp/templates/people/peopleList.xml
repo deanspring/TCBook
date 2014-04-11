@@ -86,8 +86,8 @@
 				$.getJSON('s/musicalArtist/', function(artistsAll) {
 					$('.people-list').slideUp(function() {
 						$.loadTemplate('templates/people/peopleLikeArtist.xml', '.person-form', {person : person, artists : artistsAll}, function() {
-							for (var i = 0; artists.length > i; i++)
-								$('.person-form :input:checkbox[value="' + artists[i].id + '"]').click();
+							for (var id in artists)
+								$('.person-form :input:checkbox[value="' + id + '"]').click().closest('tr').find('input:text').val(artists[id]);
 						});
 					});
 				});

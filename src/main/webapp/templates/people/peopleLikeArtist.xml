@@ -23,17 +23,14 @@
 						<input type="checkbox" value="{{=artist.id}}"/>
 					</td>
 					<td>
-						<div class="col-xs-1">
-    						<input type="text" class="form-control" placeholder="Nota"/>
-  						</div>
+   						<input type="text" class="form-control" placeholder="Nota"/>
   					</td>
 					<td>{{=artist.id}}</td>
-					<td>{{=artist.artistName}}</td>
+					<td>{{=artist.artisticName}}</td>
 					<td>{{=artist.genre}}</td>
 					<td>{{=artist.country}}</td>
 					<td>{{=artist.url}}</td>
 				</tr>
-				{{?}}
 			{{~}}
 			</tbody>
 		</table>
@@ -53,11 +50,11 @@
 			var data = {};
 
 			$('.person-form :checked').each(function() {
-				if (isNaN($(this).parent().find('[type="text"]').val()) {
+				if (isNaN($(this).closest('tr').find('[type="text"]').val())) {
 					data = undefined;
 					return false;
 				}
-				data[parseInt($(this).val())] = parseInt($(this).parent().find('[type="text"]').val());
+				data[parseInt($(this).val())] = parseInt($(this).closest('tr').find('[type="text"]').val());
 			});
 
 			if (!data)
@@ -65,7 +62,7 @@
 
 			$.ajax({
 				type : 'PUT',
-				url : 's/people/' + id + '/artistLike',
+				url : 's/people/' + id + '/musicalArtist',
 				data : {artists : JSON.stringify(data)},
 				success : function() {
 					people.load();

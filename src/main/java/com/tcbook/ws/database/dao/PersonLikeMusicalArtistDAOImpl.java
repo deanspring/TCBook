@@ -48,7 +48,7 @@ public class PersonLikeMusicalArtistDAOImpl extends DAO implements PersonLikeMus
     public void insert(final Long idPerson, final Long idMusicalArtist, final Integer rating) throws SQLException {
         try {
             final StringBuilder sb = new StringBuilder();
-            sb.append("INSERT INTO pessoacurteartistamusical");
+            sb.append("INSERT INTO PessoaCurteArtistaMusical");
             sb.append(" (id_pessoa,");
             sb.append(" id_artista_musical,");
             sb.append(" nota,");
@@ -160,7 +160,7 @@ public class PersonLikeMusicalArtistDAOImpl extends DAO implements PersonLikeMus
         Map<Long, Integer> result = null;
         try {
             final StringBuilder sb = new StringBuilder();
-            sb.append("SELECT * FROM pessoacurteartistamusical WHERE id_pessoa = ?");
+            sb.append("SELECT * FROM PessoaCurteArtistaMusical WHERE id_pessoa = ?");
 
             long before = System.currentTimeMillis();
             List<Map<String, Object>> rows = getJdbc().queryForList(sb.toString(), idPerson);

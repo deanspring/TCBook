@@ -1,16 +1,21 @@
 package com.tcbook.ws.core.bo;
 
-import com.tcbook.ws.bean.MusicalArtist;
-import com.tcbook.ws.bean.Person;
-import com.tcbook.ws.database.dao.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.tcbook.ws.bean.Person;
+import com.tcbook.ws.database.dao.ColleagueDAO;
+import com.tcbook.ws.database.dao.ColleagueDAOImpl;
+import com.tcbook.ws.database.dao.PersonDAO;
+import com.tcbook.ws.database.dao.PersonDAOImpl;
+import com.tcbook.ws.database.dao.PersonLikeMusicalArtistDAO;
+import com.tcbook.ws.database.dao.PersonLikeMusicalArtistDAOImpl;
 
 public class PersonBO {
 
@@ -19,7 +24,6 @@ public class PersonBO {
     private PersonDAO personDAO = PersonDAOImpl.getInstance();
     private ColleagueDAO colleagueDAO = ColleagueDAOImpl.getInstance();
     private PersonLikeMusicalArtistDAO personLikeMusicalArtistDAO = PersonLikeMusicalArtistDAOImpl.getInstance();
-    private MusicalArtistDAO musicalArtistDAO = MusicalArtistDAOImpl.getInstance();
 
     public List<Person> getAll() {
         List<Person> people = personDAO.findAll();
@@ -139,21 +143,14 @@ public class PersonBO {
         }
     }
 
-    public List<MusicalArtist> getMusicalsArtistsForPersonWithId(Long personId) {
-        Map<Long, Integer> existingLikes = new HashMap<Long, Integer>();
+    public Map<Long, Integer> getMusicalsArtistsForPersonWithId(Long personId) {
         try {
-            existingLikes = personLikeMusicalArtistDAO.getAllForPerson(personId);
+            return personLikeMusicalArtistDAO.getAllForPerson(personId);
         } catch (Exception e) {
             logEx.error("[TCBook] Error retrieving musicalArtists that person {} like. Exception: " + e, personId);
-        }
 
-        List<MusicalArtist> result = new ArrayList<MusicalArtist>();
-        if (existingLikes != null && !existingLikes.isEmpty()) {
-            for (Long musicalArtistId : existingLikes.keySet()) {
-                result.add(musicalArtistDAO.find(musicalArtistId));
-            }
+            return new HashMap<Long, Integer>();
         }
-        return result;
     }
 
 }
