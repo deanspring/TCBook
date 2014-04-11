@@ -1,0 +1,12 @@
+Instruções de uso:
+
+Para funcionar, o programa depende de uma base mysql rodando na máquina. Utiliza os seguintes dados de conexão:
+tcbook.db.url=jdbc:mysql://localhost:3306/mc536
+tcbook.db.username=tcbook-ws
+tcbook.db.password=tcbook123
+
+(Caso seja necessário rodar a aplicação, o arquivo config/tcbook.properties contém os dados acima, basta adequá-los)
+
+O TCBook utiliza o schema criado em sala e os dados importados dos arquivos xml da atividade passada.
+
+Após ter a base de dados configurada corretamente, basta rodar a aplicação via alguma IDE (Eclipse/IntelliJ com certeza são suportados).
