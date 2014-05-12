@@ -1,25 +1,20 @@
 package com.tcbook.ws.core.bo;
 
+import com.tcbook.ws.bean.Person;
+import com.tcbook.ws.database.dao.*;
+import com.tcbook.ws.util.TCBookConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.tcbook.ws.bean.Person;
-import com.tcbook.ws.database.dao.ColleagueDAO;
-import com.tcbook.ws.database.dao.ColleagueDAOImpl;
-import com.tcbook.ws.database.dao.PersonDAO;
-import com.tcbook.ws.database.dao.PersonDAOImpl;
-import com.tcbook.ws.database.dao.PersonLikeMusicalArtistDAO;
-import com.tcbook.ws.database.dao.PersonLikeMusicalArtistDAOImpl;
-
 public class PersonBO {
 
-    private static final Logger logEx = LoggerFactory.getLogger(PersonBO.class);
+    private static final Logger logEx = LoggerFactory.getLogger(TCBookConstants.LOG_NAME_EXCEPTIONS);
 
     private PersonDAO personDAO = PersonDAOImpl.getInstance();
     private ColleagueDAO colleagueDAO = ColleagueDAOImpl.getInstance();

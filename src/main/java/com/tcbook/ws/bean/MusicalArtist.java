@@ -12,9 +12,9 @@ public class MusicalArtist {
 
 	private String country;
 
-	private String genre;
-
 	private String url;
+
+    private String mbid;
 
 	public Long getId() {
 		return id;
@@ -40,14 +40,6 @@ public class MusicalArtist {
 		this.country = country;
 	}
 
-	public String getGenre() {
-		return genre;
-	}
-
-	public void setGenre(String genre) {
-		this.genre = genre;
-	}
-
 	public String getUrl() {
 		return url;
 	}
@@ -70,4 +62,12 @@ public class MusicalArtist {
 	public boolean equals(Object obj) {
 		return EqualsBuilder.reflectionEquals(this, obj);
 	}
+
+    public String getMbid() {
+        return mbid;
+    }
+
+    public void setMbid(String mbid) {
+        this.mbid = mbid;
+    }
 }

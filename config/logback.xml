@@ -37,6 +37,30 @@
         </encoder>
     </appender>
 
+    <appender name="ap_data_cleaning_job" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}data_cleaning_job.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- rollover daily -->
+            <fileNamePattern>${LOG_PATH}data_cleaning_job.log.k7d-%d{yyyy-MM-dd}.gz</fileNamePattern>
+            <maxHistory>${DEFAULT_MAX_HISTORY}</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${DEFAULT_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="ap_data_extraction_job" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}data_extraction_job.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- rollover daily -->
+            <fileNamePattern>${LOG_PATH}data_extraction_job.log.k7d-%d{yyyy-MM-dd}.gz</fileNamePattern>
+            <maxHistory>${DEFAULT_MAX_HISTORY}</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${DEFAULT_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
     <appender name="ap_exceptions" class="ch.qos.logback.core.rolling.RollingFileAppender">
     	<file>${LOG_PATH}exceptions.log</file>
     	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
@@ -92,6 +116,14 @@
 	<logger name="com.tcbook" level="DEBUG" additivity="false">
 		<appender-ref ref="ap_system" />
 	</logger>
+
+    <logger name="com.tcbook.ws.job.DataCleaningJob" level="DEBUG" additivity="false">
+        <appender-ref ref="ap_data_cleaning_job" />
+    </logger>
+
+    <logger name="com.tcbook.ws.job.DataExtractionJob" level="DEBUG" additivity="false">
+        <appender-ref ref="ap_data_extraction_job" />
+    </logger>
 
 	<logger name="EXCEPTIONS" level="DEBUG" additivity="false">
 		<appender-ref ref="ap_exceptions" />
