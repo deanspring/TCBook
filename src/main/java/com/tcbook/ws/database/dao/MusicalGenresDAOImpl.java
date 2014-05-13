@@ -83,9 +83,9 @@ public class MusicalGenresDAOImpl extends DAO implements MusicalGenresDAO {
 
             long before = System.currentTimeMillis();
             List<Map<String, Object>> rows = getJdbc().queryForList(sb.toString(), genreName);
-            result = new MusicalGenre();
 
             if (rows != null && rows.size() > 0) {
+                result = new MusicalGenre();
                 Map<String, Object> row = rows.get(0);
 
                 result.setId(new Long((Integer) row.get("id")));
