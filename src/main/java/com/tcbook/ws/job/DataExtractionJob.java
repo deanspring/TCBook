@@ -2,10 +2,11 @@ package com.tcbook.ws.job;
 
 import com.echonest.api.v4.Artist;
 import com.echonest.api.v4.EchoNestAPI;
-import com.tcbook.ws.bean.MusicalArtist;
-import com.tcbook.ws.bean.MusicalGenre;
+import com.echonest.api.v4.EchoNestException;
+import com.tcbook.ws.bean.*;
 import com.tcbook.ws.core.bo.MusicalArtistBO;
 import com.tcbook.ws.core.bo.MusicalGenreBO;
+import com.tcbook.ws.core.bo.RegionBO;
 import com.tcbook.ws.util.TCBookConstants;
 import com.tcbook.ws.util.TCBookProperties;
 import org.apache.commons.lang3.StringUtils;
@@ -32,6 +33,7 @@ public class DataExtractionJob {
 
     private static MusicalArtistBO musicalArtistBO = new MusicalArtistBO();
     private static MusicalGenreBO musicalGenreBO = new MusicalGenreBO();
+    private static RegionBO regionBO = new RegionBO();
 
     public static void extractData() {
         long before = System.currentTimeMillis();
@@ -50,17 +52,21 @@ public class DataExtractionJob {
             List<MusicalArtist> musicalArtists = musicalArtistBO.getAll();
             for (MusicalArtist artist : musicalArtists) {
 
+                // extract the artist name from the wikipedia URL
+                String potentialName = artist.getUrl().replace("http://en.wikipedia.org/wiki/", "");
+                String normalizedName = normalize(potentialName);
+
                 // doesn' need to retrieve data of artists that already have it filled
                 if (StringUtils.isBlank(artist.getMbid())) {
-                    // extract the artist name from the wikipedia URL
-                    String potentialName = artist.getUrl().replace("http://en.wikipedia.org/wiki/", "");
-                    String normalizedName = normalize(potentialName);
-
                     // fill musical artist informations with genres and artistic name
                     String lastFMAPIKey = TCBookProperties.getInstance().getString("lastfm.api_key");
                     extractLastFMData(artist, normalizedName, lastFMAPIKey, finalListGenres, listGenres, echonest);
 
                     Thread.sleep(200); // avoid to send too much information to external APIs
+                }
+
+                if (artist.getIdRegion() == null) {
+                    extractRegionData(echonest, (StringUtils.isNotBlank(artist.getArtisticName()) ? artist.getArtisticName() : normalizedName), artist);
                 }
             }
 
@@ -91,13 +97,26 @@ public class DataExtractionJob {
                 // echonest fallback
 
                 try {
-                    List<Artist> artists = echonest.searchArtists(name);
-                    if (artists != null && artists.size() > 0) {
-                        Artist echoNestArtist = artists.get(0);
-                        remoteName = echoNestArtist.getName();
-                        remoteMbid = echoNestArtist.getForeignID("musicbrainz");
-                        if (StringUtils.isNotBlank(remoteMbid)) {
-                            remoteMbid = remoteMbid.replace("musicbrainz:artist:", "");
+                    Boolean extracted = Boolean.FALSE;
+                    while (!extracted) {
+                        try {
+                            List<Artist> artists = echonest.searchArtists(name);
+                            if (artists != null && artists.size() > 0) {
+                                Artist echoNestArtist = artists.get(0);
+                                remoteName = echoNestArtist.getName();
+                                remoteMbid = echoNestArtist.getForeignID("musicbrainz");
+                                if (StringUtils.isNotBlank(remoteMbid)) {
+                                    remoteMbid = remoteMbid.replace("musicbrainz:artist:", "");
+                                }
+                            }
+                            extracted = Boolean.TRUE;
+                        } catch (EchoNestException e) {
+                            log.error("Echonest limit exceeded. will retry.");
+                            try {
+                                Thread.sleep(10000);
+                            } catch (Exception e1) {
+                                // do nothing
+                            }
                         }
                     }
                 } catch (Exception e) {
@@ -130,6 +149,7 @@ public class DataExtractionJob {
                 } else {
                     logText.append("GENRES: NOT FOUND!");
                 }
+
                 log.info(logText.toString());
             } else {
                 log.error("NOT FOUND. Received: Name -" + remoteName + "-, mbid " + remoteMbid + ". Searched for: -" + name + "-");
@@ -167,6 +187,56 @@ public class DataExtractionJob {
             logEx.error("Error parsing genres.", e);
         }
         return genres;
+    }
+
+    private static void extractRegionData(EchoNestAPI echonest, String remoteName, MusicalArtist artist) {
+        Boolean extracted = Boolean.FALSE;
+        StringBuilder logText = new StringBuilder("Region for artist ").append(remoteName).append(": ");
+        try {
+            while (!extracted) {
+                try {
+                    List<Artist> artists = echonest.searchArtists(remoteName, 1);
+                    if (artists != null && !artists.isEmpty()) {
+                        Artist echonestArtist = artists.get(0);
+
+                        String remoteCity = echonestArtist.getArtistLocation().getCity();
+                        String remoteCountry = echonestArtist.getArtistLocation().getCountry();
+
+                        if (StringUtils.isNotBlank(remoteCity) && StringUtils.isNotBlank(remoteCountry)) {
+
+                            City city = new City();
+                            city.setName(remoteCity);
+
+                            Country country = new Country();
+                            country.setName(remoteCountry);
+
+                            regionBO.createRegion(city, country);
+                            Region region = regionBO.getRegion(city.getName(), country.getName());
+                            artist.setIdRegion(region.getId());
+
+                            musicalArtistBO.update(artist);
+
+                            logText.append("FOUND id ").append(region.getId());
+                            logText.append(" for city (").append(region.getIdCity()).append(", ").append(remoteCity).append(")");
+                            logText.append(" for country (").append(region.getIdCountry()).append(", ").append(remoteCountry).append(")");
+                        }
+                    } else {
+                        logText.append("NOT FOUND");
+                    }
+                    extracted = Boolean.TRUE;
+                } catch (EchoNestException e) {
+                    log.error("Echonest limit exceeded. will retry.");
+                    try {
+                        Thread.sleep(10000);
+                    } catch (Exception e1) {
+                        // do nothing
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logEx.error("Error extracting region for artist " + artist);
+        }
+        log.info(logText.toString());
     }
 
     private static String makeArtistInfoRequest(String apiKey, String mbid) {

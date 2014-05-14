@@ -138,3 +138,26 @@ CREATE TABLE GeneroArtistaMusical(
   FOREIGN KEY(id_genero)
   REFERENCES GeneroMusical(id)
 );
+
+CREATE TABLE Cidade(
+	id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+	nome_cidade varchar(100) NOT NULL
+);
+
+CREATE TABLE Pais(
+	id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+	nome_pais varchar(100) NOT NULL
+);
+
+CREATE TABLE Regiao(
+	id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+	id_cidade INT NOT NULL,
+	id_pais INT NOT NULL,
+  	FOREIGN KEY(id_cidade)
+  		REFERENCES Cidade(id),
+  	FOREIGN KEY(id_pais)
+  		REFERENCES Pais(id)
+);
+
+ALTER TABLE ArtistaMusical DROP COLUMN pais;
+ALTER TABLE ArtistaMusical ADD COLUMN id_regiao INT;

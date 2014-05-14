@@ -10,7 +10,7 @@ public class MusicalArtist {
 
 	private String artisticName;
 
-	private String country;
+	private Long idRegion;
 
 	private String url;
 
@@ -32,12 +32,12 @@ public class MusicalArtist {
 		this.artisticName = artisticName;
 	}
 
-	public String getCountry() {
-		return country;
+	public Long getIdRegion() {
+		return idRegion;
 	}
 
-	public void setCountry(String country) {
-		this.country = country;
+	public void setIdRegion(Long idRegion) {
+		this.idRegion = idRegion;
 	}
 
 	public String getUrl() {

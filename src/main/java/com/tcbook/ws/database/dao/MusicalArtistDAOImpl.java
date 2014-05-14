@@ -80,7 +80,7 @@ public class MusicalArtistDAOImpl extends DAO implements MusicalArtistDAO {
                 MusicalArtist artist = new MusicalArtist();
                 artist.setId(new Long((Integer) row.get("id")));
                 artist.setArtisticName(row.get("nome_artistico").toString());
-                artist.setCountry(row.get("pais").toString());
+                artist.setIdRegion(row.get("id_regiao") != null ? new Long((Integer) row.get("id_regiao")) : null);
                 artist.setUrl(row.get("url").toString());
                 artist.setMbid(row.get("mbid") != null ? row.get("mbid").toString() : null);
                 result.add(artist);
@@ -101,7 +101,7 @@ public class MusicalArtistDAOImpl extends DAO implements MusicalArtistDAO {
             final StringBuilder sb = new StringBuilder();
             sb.append("INSERT INTO artistamusical");
             sb.append(" (nome_artistico,");
-            sb.append("pais,");
+            sb.append("id_regiao,");
             sb.append("url,");
             sb.append("mbid)");
             sb.append(" VALUES (?,?,?,?)");
@@ -115,7 +115,7 @@ public class MusicalArtistDAOImpl extends DAO implements MusicalArtistDAO {
 
                     ps.setString(i++, artist.getArtisticName());
 
-                    ps.setString(i++, artist.getCountry());
+                    ps.setLong(i++, artist.getIdRegion());
 
                     ps.setString(i++, artist.getUrl());
 
@@ -160,7 +160,7 @@ public class MusicalArtistDAOImpl extends DAO implements MusicalArtistDAO {
             final StringBuilder sb = new StringBuilder();
             sb.append("UPDATE artistamusical");
             sb.append(" SET nome_artistico=?,");
-            sb.append("pais=?, ");
+            sb.append("id_regiao=?, ");
             sb.append("url=?, ");
             sb.append("mbid=? ");
             sb.append(" WHERE id=?");
@@ -174,7 +174,7 @@ public class MusicalArtistDAOImpl extends DAO implements MusicalArtistDAO {
 
                     ps.setString(i++, artist.getArtisticName());
 
-                    ps.setString(i++, artist.getCountry());
+                    ps.setLong(i++, artist.getIdRegion());
 
                     ps.setString(i++, artist.getUrl());
 
@@ -200,7 +200,7 @@ public class MusicalArtistDAOImpl extends DAO implements MusicalArtistDAO {
             MusicalArtist artist = new MusicalArtist();
             artist.setId(new Long(resultSet.getInt("id")));
             artist.setArtisticName(resultSet.getString("nome_artistico"));
-            artist.setCountry(resultSet.getString("pais"));
+            artist.setIdRegion(((Long) resultSet.getLong("id_regiao") != null) ? (Long) resultSet.getLong("id_regiao") : null);
             artist.setUrl(resultSet.getString("url"));
             artist.setMbid(resultSet.getString("mbid"));
 
