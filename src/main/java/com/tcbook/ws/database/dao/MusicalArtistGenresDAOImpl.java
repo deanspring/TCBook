@@ -1,15 +1,14 @@
 package com.tcbook.ws.database.dao;
 
-import com.tcbook.ws.database.datasource.DataSourceType;
-import com.tcbook.ws.util.TCBookConstants;
-import com.tcbook.ws.util.TCBookProperties;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import com.tcbook.ws.util.TCBookConstants;
 
 public class MusicalArtistGenresDAOImpl extends DAO implements MusicalArtistGenresDAO {
 

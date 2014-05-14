@@ -1,12 +1,5 @@
 package com.tcbook.ws.database.dao;
 
-import com.tcbook.ws.database.datasource.DataSourceType;
-import com.tcbook.ws.util.TCBookConstants;
-import com.tcbook.ws.util.TCBookProperties;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.jdbc.core.PreparedStatementCreator;
-
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -14,6 +7,12 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.jdbc.core.PreparedStatementCreator;
+
+import com.tcbook.ws.util.TCBookConstants;
 
 public class PersonLikeMusicalArtistDAOImpl extends DAO implements PersonLikeMusicalArtistDAO {
 
@@ -171,7 +170,7 @@ public class PersonLikeMusicalArtistDAOImpl extends DAO implements PersonLikeMus
 	public void updateLike(final Long idPerson, final Long idMusicalArtist, final Integer rate) throws SQLException {
 		try {
 			final StringBuilder sb = new StringBuilder();
-			sb.append("UPDATE pessoacurteartistamusical SET nota = ? WHERE");
+			sb.append("UPDATE PessoaCurteArtistaMusical SET nota = ? WHERE");
 			sb.append(" id_pessoa = ? AND id_artista_musical = ?");
 
 			long before = System.currentTimeMillis();

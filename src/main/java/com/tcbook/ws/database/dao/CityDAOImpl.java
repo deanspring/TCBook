@@ -1,18 +1,17 @@
 package com.tcbook.ws.database.dao;
 
-import com.tcbook.ws.bean.City;
-import com.tcbook.ws.database.datasource.DataSourceType;
-import com.tcbook.ws.util.TCBookConstants;
-import com.tcbook.ws.util.TCBookProperties;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.jdbc.core.PreparedStatementCreator;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.jdbc.core.PreparedStatementCreator;
+
+import com.tcbook.ws.bean.City;
+import com.tcbook.ws.util.TCBookConstants;
 
 public class CityDAOImpl extends DAO implements CityDAO {
 

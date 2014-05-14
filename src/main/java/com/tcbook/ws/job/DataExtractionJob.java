@@ -118,6 +118,7 @@ public class DataExtractionJob {
 			}
 
 		} catch (Exception e) {
+			e.printStackTrace();
 			log.error("[DATA_EXTRACTION_JOB] Error extracting LastFM data for artist {}", artistName);
 			logEx.error("Error extracting LastFM data.", e);
 		}

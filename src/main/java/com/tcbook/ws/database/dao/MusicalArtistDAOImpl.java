@@ -1,21 +1,21 @@
 package com.tcbook.ws.database.dao;
 
-import com.tcbook.ws.bean.MusicalArtist;
-import com.tcbook.ws.database.datasource.DataSourceType;
-import com.tcbook.ws.util.TCBookConstants;
-import com.tcbook.ws.util.TCBookProperties;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import com.tcbook.ws.bean.MusicalArtist;
+import com.tcbook.ws.util.TCBookConstants;
 
 public class MusicalArtistDAOImpl extends DAO implements MusicalArtistDAO {
 
@@ -87,7 +87,7 @@ public class MusicalArtistDAOImpl extends DAO implements MusicalArtistDAO {
 	public void insert(final MusicalArtist artist) throws SQLException {
 		try {
 			final StringBuilder sb = new StringBuilder();
-			sb.append("INSERT INTO artistamusical");
+			sb.append("INSERT INTO ArtistaMusical");
 			sb.append(" (nome_artistico,");
 			sb.append("id_regiao,");
 			sb.append("url,");
@@ -146,7 +146,7 @@ public class MusicalArtistDAOImpl extends DAO implements MusicalArtistDAO {
 	public void update(final MusicalArtist artist) {
 		try {
 			final StringBuilder sb = new StringBuilder();
-			sb.append("UPDATE artistamusical");
+			sb.append("UPDATE ArtistaMusical");
 			sb.append(" SET nome_artistico=?,");
 			sb.append("id_regiao=?, ");
 			sb.append("url=?, ");
@@ -162,7 +162,10 @@ public class MusicalArtistDAOImpl extends DAO implements MusicalArtistDAO {
 
 					ps.setString(i++, artist.getArtisticName());
 
-					ps.setLong(i++, artist.getIdRegion());
+					if (artist.getIdRegion() != null)
+						ps.setLong(i++, artist.getIdRegion());
+					else
+						ps.setNull(i++, Types.INTEGER);
 
 					ps.setString(i++, artist.getUrl());
 
@@ -175,6 +178,7 @@ public class MusicalArtistDAOImpl extends DAO implements MusicalArtistDAO {
 			});
 			log.info("[MUSICAL_ARTIST_DAO] MusicalArtist {} updated in " + (System.currentTimeMillis() - before) + "ms", artist);
 		} catch (Exception e) {
+			e.printStackTrace();
 			log.error("[MUSICAL_ARTIST_DAO] Error updating MusicalArtist {}. Exception " + e, artist);
 			logEx.error("Error updating MusicalArtist", e);
 		}

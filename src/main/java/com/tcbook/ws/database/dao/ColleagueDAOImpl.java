@@ -11,9 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 
-import com.tcbook.ws.database.datasource.DataSourceType;
 import com.tcbook.ws.util.TCBookConstants;
-import com.tcbook.ws.util.TCBookProperties;
 
 public class ColleagueDAOImpl extends DAO implements ColleagueDAO {
 
