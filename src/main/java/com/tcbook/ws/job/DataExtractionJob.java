@@ -276,6 +276,7 @@ public class DataExtractionJob {
 			logText.append(" for city (").append(region.getIdCity()).append(", ").append(remoteCity).append(")");
 			logText.append(" for country (").append(region.getIdCountry()).append(", ").append(remoteCountry).append(")");
 		} catch (Exception e) {
+			e.printStackTrace();
 			logEx.error("Error extracting region for artist " + artist);
 		}
 	}
