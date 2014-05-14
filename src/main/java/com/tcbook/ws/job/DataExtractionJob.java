@@ -25,9 +25,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by caiouvini on 5/11/14.
- */
 public class DataExtractionJob {
 
     private static final Logger log = LoggerFactory.getLogger(DataExtractionJob.class);
@@ -76,7 +73,8 @@ public class DataExtractionJob {
         }
     }
 
-    private static void extractLastFMData(MusicalArtist artist, String name, String apiKey, List<String> genreNames, List<MusicalGenre> genres, EchoNestAPI echonest) {
+    @SuppressWarnings("unchecked")
+	private static void extractLastFMData(MusicalArtist artist, String name, String apiKey, List<String> genreNames, List<MusicalGenre> genres, EchoNestAPI echonest) {
         try {
 
             // search for artist and parse response
@@ -145,7 +143,8 @@ public class DataExtractionJob {
 
     }
 
-    private static List<String> extractGenres(String name, String mbid, String apiKey, List<String> listGenres) {
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	private static List<String> extractGenres(String name, String mbid, String apiKey, List<String> listGenres) {
 
         List<String> genres = new ArrayList<String>();
 

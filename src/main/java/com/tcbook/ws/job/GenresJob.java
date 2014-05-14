@@ -9,9 +9,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-/**
- * Created by caiouvini on 5/11/14.
- */
 public class GenresJob {
 
     private static final Logger log = LoggerFactory.getLogger(GenresJob.class);

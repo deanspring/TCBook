@@ -8,9 +8,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 
-/**
- * Created by caiouvini on 5/11/14.
- */
 public class DataCleaningJob {
 
     private static final Logger log = LoggerFactory.getLogger(DataCleaningJob.class);
