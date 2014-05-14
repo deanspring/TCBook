@@ -11,90 +11,75 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-/**
- * Created by caiouvini on 5/11/14.
- */
 public class MusicalArtistGenresDAOImpl extends DAO implements MusicalArtistGenresDAO {
 
-    private static MusicalArtistGenresDAOImpl instance;
+	private static MusicalArtistGenresDAOImpl instance;
 
-    private static final String DB_ALIAS = "TCBOOK_DB";
+	private static Logger log = LoggerFactory.getLogger(TCBookConstants.LOG_NAME_DAO);
+	private static Logger logEx = LoggerFactory.getLogger(TCBookConstants.LOG_NAME_EXCEPTIONS);
 
-    private static Logger log = LoggerFactory.getLogger(TCBookConstants.LOG_NAME_DAO);
-    private static Logger logEx = LoggerFactory.getLogger(TCBookConstants.LOG_NAME_EXCEPTIONS);
+	private MusicalArtistGenresDAOImpl() {
+		super();
+	}
 
-    private MusicalArtistGenresDAOImpl() {
-        super();
-    }
+	public static MusicalArtistGenresDAOImpl getInstance() {
+		if (instance == null) {
+			instance = new MusicalArtistGenresDAOImpl();
+		}
+		return instance;
+	}
 
-    public static MusicalArtistGenresDAOImpl getInstance() {
-        if (instance == null) {
-            instance = new MusicalArtistGenresDAOImpl();
-        }
-        return instance;
-    }
+	public void insert(final Long idMusicalArtist, final Long idGenre) throws SQLException {
+		try {
+			final StringBuilder sb = new StringBuilder();
+			sb.append("INSERT INTO GeneroArtistaMusical");
+			sb.append(" (id_artista_musical,");
+			sb.append(" id_genero)");
+			sb.append(" VALUES (?,?)");
 
-    @Override
-    protected String getDatabaseAlias() {
-        return DB_ALIAS;
-    }
+			long before = System.currentTimeMillis();
+			getJdbc().update(new PreparedStatementCreator() {
+				public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
 
-    @Override
-    protected DataSourceType getDataSourceType() {
-        return DataSourceType.valueOf(TCBookProperties.getInstance().getString("tcbook.db.type"));
-    }
+					PreparedStatement ps = connection.prepareStatement(sb.toString());
+					int i = 1;
 
-    public void insert(final Long idMusicalArtist, final Long idGenre) throws SQLException {
-        try {
-            final StringBuilder sb = new StringBuilder();
-            sb.append("INSERT INTO GeneroArtistaMusical");
-            sb.append(" (id_artista_musical,");
-            sb.append(" id_genero)");
-            sb.append(" VALUES (?,?)");
+					ps.setInt(i++, idMusicalArtist.intValue());
 
-            long before = System.currentTimeMillis();
-            getJdbc().update(new PreparedStatementCreator() {
-                public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+					ps.setInt(i++, idGenre.intValue());
 
-                    PreparedStatement ps = connection.prepareStatement(sb.toString());
-                    int i = 1;
+					return ps;
+				}
+			});
+			log.info("[MUSICAL_ARTIST_GENRES] MusicalArtist {} Genre {} inserted in database in " + (System.currentTimeMillis() - before) + "ms", idMusicalArtist, idGenre);
+		} catch (Exception e) {
+			log.error("[MUSICAL_ARTIST_GENRES] Error persisting MusicalArtist {} genre {}. Exception " + e, idMusicalArtist, idGenre);
+			logEx.error("Error persisting musical artist genre", e);
+		}
+	}
 
-                    ps.setInt(i++, idMusicalArtist.intValue());
+	public void removeAllForArtist(final Long idMusicalArtist) throws SQLException {
+		try {
+			final StringBuilder sb = new StringBuilder();
+			sb.append("DELETE FROM GeneroArtistaMusical WHERE ");
+			sb.append("id_artista_musical = ?");
 
-                    ps.setInt(i++, idGenre.intValue());
+			long before = System.currentTimeMillis();
+			getJdbc().update(new PreparedStatementCreator() {
+				public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
 
-                    return ps;
-                }
-            });
-            log.info("[MUSICAL_ARTIST_GENRES] MusicalArtist {} Genre {} inserted in database in " + (System.currentTimeMillis() - before) + "ms", idMusicalArtist, idGenre);
-        } catch (Exception e) {
-            log.error("[MUSICAL_ARTIST_GENRES] Error persisting MusicalArtist {} genre {}. Exception " + e, idMusicalArtist, idGenre);
-            logEx.error("Error persisting musical artist genre", e);
-        }
-    }
+					PreparedStatement ps = connection.prepareStatement(sb.toString());
 
-    public void removeAllForArtist(final Long idMusicalArtist) throws SQLException {
-        try {
-            final StringBuilder sb = new StringBuilder();
-            sb.append("DELETE FROM GeneroArtistaMusical WHERE ");
-            sb.append("id_artista_musical = ?");
+					ps.setInt(1, idMusicalArtist.intValue());
 
-            long before = System.currentTimeMillis();
-            getJdbc().update(new PreparedStatementCreator() {
-                public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
-
-                    PreparedStatement ps = connection.prepareStatement(sb.toString());
-
-                    ps.setInt(1, idMusicalArtist.intValue());
-
-                    return ps;
-                }
-            });
-            log.info("[MUSICAL_ARTIST_GENRES] Genres for MusicalArtist {} removed from database in " + (System.currentTimeMillis() - before) + "ms", idMusicalArtist);
-        } catch (Exception e) {
-            log.error("[MUSICAL_ARTIST_GENRES] Error removing genres for MusicalArtist {}. Exception " + e, idMusicalArtist);
-            logEx.error("Error removing genres for MusicalArtist", e);
-        }
-    }
+					return ps;
+				}
+			});
+			log.info("[MUSICAL_ARTIST_GENRES] Genres for MusicalArtist {} removed from database in " + (System.currentTimeMillis() - before) + "ms", idMusicalArtist);
+		} catch (Exception e) {
+			log.error("[MUSICAL_ARTIST_GENRES] Error removing genres for MusicalArtist {}. Exception " + e, idMusicalArtist);
+			logEx.error("Error removing genres for MusicalArtist", e);
+		}
+	}
 
 }

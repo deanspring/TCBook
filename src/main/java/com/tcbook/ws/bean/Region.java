@@ -1,37 +1,34 @@
 package com.tcbook.ws.bean;
 
-/**
- * Created by caiouvini on 5/13/14.
- */
 public class Region {
 
-    private Long id;
+	private Long id;
 
-    private Long idCountry;
+	private Long idCountry;
 
-    private Long idCity;
+	private Long idCity;
 
-    public Long getId() {
-        return id;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public Long getIdCountry() {
-        return idCountry;
-    }
+	public Long getIdCountry() {
+		return idCountry;
+	}
 
-    public void setIdCountry(Long idCountry) {
-        this.idCountry = idCountry;
-    }
+	public void setIdCountry(Long idCountry) {
+		this.idCountry = idCountry;
+	}
 
-    public Long getIdCity() {
-        return idCity;
-    }
+	public Long getIdCity() {
+		return idCity;
+	}
 
-    public void setIdCity(Long idCity) {
-        this.idCity = idCity;
-    }
+	public void setIdCity(Long idCity) {
+		this.idCity = idCity;
+	}
 }

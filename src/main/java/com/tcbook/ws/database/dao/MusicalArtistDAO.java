@@ -7,14 +7,14 @@ import java.util.List;
 
 public interface MusicalArtistDAO {
 
-    public MusicalArtist find(Long id);
+	public MusicalArtist find(Long id);
 
-    public List<MusicalArtist> findAll();
+	public List<MusicalArtist> findAll();
 
-    public void insert(MusicalArtist artist) throws SQLException;
+	public void insert(MusicalArtist artist) throws SQLException;
 
-    public void remove(Long id) throws SQLException;
+	public void remove(Long id) throws SQLException;
 
-    public void update(MusicalArtist artist) throws SQLException;
+	public void update(MusicalArtist artist) throws SQLException;
 
 }

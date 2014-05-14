@@ -14,93 +14,78 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by caiouvini on 5/13/14.
- */
 public class RegionDAOImpl extends DAO implements RegionDAO {
 
-    private static RegionDAOImpl instance;
+	private static RegionDAOImpl instance;
 
-    private static final String DB_ALIAS = "TCBOOK_DB";
+	private static Logger log = LoggerFactory.getLogger(TCBookConstants.LOG_NAME_DAO);
+	private static Logger logEx = LoggerFactory.getLogger(TCBookConstants.LOG_NAME_EXCEPTIONS);
 
-    private static Logger log = LoggerFactory.getLogger(TCBookConstants.LOG_NAME_DAO);
-    private static Logger logEx = LoggerFactory.getLogger(TCBookConstants.LOG_NAME_EXCEPTIONS);
+	private RegionDAOImpl() {
+		super();
+	}
 
-    private RegionDAOImpl() {
-        super();
-    }
+	public static RegionDAOImpl getInstance() {
+		if (instance == null) {
+			instance = new RegionDAOImpl();
+		}
+		return instance;
+	}
 
-    public static RegionDAOImpl getInstance() {
-        if (instance == null) {
-            instance = new RegionDAOImpl();
-        }
-        return instance;
-    }
+	@Override
+	public void insert(final Region region) throws SQLException {
+		try {
+			final StringBuilder sb = new StringBuilder();
+			sb.append("INSERT INTO Regiao");
+			sb.append(" (id_cidade,");
+			sb.append(" id_pais)");
+			sb.append(" VALUES (?,?)");
 
-    @Override
-    protected String getDatabaseAlias() {
-        return DB_ALIAS;
-    }
+			long before = System.currentTimeMillis();
+			getJdbc().update(new PreparedStatementCreator() {
+				public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
 
-    @Override
-    protected DataSourceType getDataSourceType() {
-        return DataSourceType.valueOf(TCBookProperties.getInstance().getString("tcbook.db.type"));
-    }
+					PreparedStatement ps = connection.prepareStatement(sb.toString());
+					int i = 1;
 
-    @Override
-    public void insert(final Region region) throws SQLException {
-        try {
-            final StringBuilder sb = new StringBuilder();
-            sb.append("INSERT INTO Regiao");
-            sb.append(" (id_cidade,");
-            sb.append(" id_pais)");
-            sb.append(" VALUES (?,?)");
+					ps.setInt(i++, region.getIdCity().intValue());
+					ps.setInt(i++, region.getIdCountry().intValue());
 
-            long before = System.currentTimeMillis();
-            getJdbc().update(new PreparedStatementCreator() {
-                public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+					return ps;
+				}
+			});
+			log.info("[REGION_DAO] Region {} inserted in database in " + (System.currentTimeMillis() - before) + "ms", region);
+		} catch (Exception e) {
+			log.error("[REGION_DAO] Error persisting Region {}. Exception " + e, region);
+			logEx.error("Error persisting Region", e);
+		}
+	}
 
-                    PreparedStatement ps = connection.prepareStatement(sb.toString());
-                    int i = 1;
+	public Region findForCityAndCountry(String cityName, String countryName) {
+		Region result = null;
+		try {
+			final StringBuilder sb = new StringBuilder();
+			sb.append("SELECT * FROM Regiao WHERE id_cidade in (SELECT id from Cidade where nome_cidade = ?) AND id_pais in (SELECT id from Pais where nome_pais = ?)");
 
-                    ps.setInt(i++, region.getIdCity().intValue());
-                    ps.setInt(i++, region.getIdCountry().intValue());
+			long before = System.currentTimeMillis();
+			List<Map<String, Object>> rows = getJdbc().queryForList(sb.toString(), cityName, countryName);
 
-                    return ps;
-                }
-            });
-            log.info("[REGION_DAO] Region {} inserted in database in " + (System.currentTimeMillis() - before) + "ms", region);
-        } catch (Exception e) {
-            log.error("[REGION_DAO] Error persisting Region {}. Exception " + e, region);
-            logEx.error("Error persisting Region", e);
-        }
-    }
+			if (rows != null && rows.size() > 0) {
+				result = new Region();
+				Map<String, Object> row = rows.get(0);
 
-    public Region findForCityAndCountry(String cityName, String countryName) {
-        Region result = null;
-        try {
-            final StringBuilder sb = new StringBuilder();
-            sb.append("SELECT * FROM Regiao WHERE id_cidade in (SELECT id from Cidade where nome_cidade = ?) AND id_pais in (SELECT id from Pais where nome_pais = ?)");
+				result.setId(new Long((Integer) row.get("id")));
+				result.setIdCity(new Long((Integer) row.get("id_cidade")));
+				result.setIdCountry(new Long((Integer) row.get("id_pais")));
+			}
 
-            long before = System.currentTimeMillis();
-            List<Map<String, Object>> rows = getJdbc().queryForList(sb.toString(), cityName, countryName);
+			log.info("[REGION_DAO] Region for city name {} and country name {} found in database in " + (System.currentTimeMillis() - before) + "ms", cityName, countryName);
+		} catch (Exception e) {
+			log.error("[REGION_DAO] Error searching region for city name {} and country name {}. Exception " + e, cityName);
+			logEx.error("Error searching region", e);
+		}
 
-            if (rows != null && rows.size() > 0) {
-                result = new Region();
-                Map<String, Object> row = rows.get(0);
-
-                result.setId(new Long((Integer)row.get("id")));
-                result.setIdCity(new Long((Integer)row.get("id_cidade")));
-                result.setIdCountry(new Long((Integer)row.get("id_pais")));
-            }
-
-            log.info("[REGION_DAO] Region for city name {} and country name {} found in database in " + (System.currentTimeMillis() - before) + "ms", cityName, countryName);
-        } catch (Exception e) {
-            log.error("[REGION_DAO] Error searching region for city name {} and country name {}. Exception " + e, cityName);
-            logEx.error("Error searching region", e);
-        }
-
-        return result;
-    }
+		return result;
+	}
 
 }

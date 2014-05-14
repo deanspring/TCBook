@@ -17,196 +17,184 @@ import java.util.Map;
 
 public class PersonLikeMusicalArtistDAOImpl extends DAO implements PersonLikeMusicalArtistDAO {
 
-    private static PersonLikeMusicalArtistDAOImpl instance;
+	private static PersonLikeMusicalArtistDAOImpl instance;
 
-    private static final String DB_ALIAS = "TCBOOK_DB";
+	private static Logger log = LoggerFactory.getLogger(TCBookConstants.LOG_NAME_DAO);
+	private static Logger logEx = LoggerFactory.getLogger(TCBookConstants.LOG_NAME_EXCEPTIONS);
 
-    private static Logger log = LoggerFactory.getLogger(TCBookConstants.LOG_NAME_DAO);
-    private static Logger logEx = LoggerFactory.getLogger(TCBookConstants.LOG_NAME_EXCEPTIONS);
+	private PersonLikeMusicalArtistDAOImpl() {
+		super();
+	}
 
-    private PersonLikeMusicalArtistDAOImpl() {
-        super();
-    }
+	public static PersonLikeMusicalArtistDAOImpl getInstance() {
+		if (instance == null) {
+			instance = new PersonLikeMusicalArtistDAOImpl();
+		}
+		return instance;
+	}
 
-    public static PersonLikeMusicalArtistDAOImpl getInstance() {
-        if (instance == null) {
-            instance = new PersonLikeMusicalArtistDAOImpl();
-        }
-        return instance;
-    }
+	public void insert(final Long idPerson, final Long idMusicalArtist, final Integer rating) throws SQLException {
+		try {
+			final StringBuilder sb = new StringBuilder();
+			sb.append("INSERT INTO PessoaCurteArtistaMusical");
+			sb.append(" (id_pessoa,");
+			sb.append(" id_artista_musical,");
+			sb.append(" nota,");
+			sb.append(" data_curtida)");
+			sb.append(" VALUES (?,?,?,?)");
 
-    @Override
-    protected String getDatabaseAlias() {
-        return DB_ALIAS;
-    }
+			long before = System.currentTimeMillis();
+			getJdbc().update(new PreparedStatementCreator() {
+				public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
 
-    @Override
-    protected DataSourceType getDataSourceType() {
-        return DataSourceType.valueOf(TCBookProperties.getInstance().getString("tcbook.db.type"));
-    }
+					PreparedStatement ps = connection.prepareStatement(sb.toString());
+					int i = 1;
 
-    public void insert(final Long idPerson, final Long idMusicalArtist, final Integer rating) throws SQLException {
-        try {
-            final StringBuilder sb = new StringBuilder();
-            sb.append("INSERT INTO PessoaCurteArtistaMusical");
-            sb.append(" (id_pessoa,");
-            sb.append(" id_artista_musical,");
-            sb.append(" nota,");
-            sb.append(" data_curtida)");
-            sb.append(" VALUES (?,?,?,?)");
+					ps.setInt(i++, idPerson.intValue());
 
-            long before = System.currentTimeMillis();
-            getJdbc().update(new PreparedStatementCreator() {
-                public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+					ps.setInt(i++, idMusicalArtist.intValue());
 
-                    PreparedStatement ps = connection.prepareStatement(sb.toString());
-                    int i = 1;
+					ps.setInt(i++, rating);
 
-                    ps.setInt(i++, idPerson.intValue());
+					ps.setDate(i++, new Date(System.currentTimeMillis()));
 
-                    ps.setInt(i++, idMusicalArtist.intValue());
+					return ps;
+				}
+			});
+			log.info("[PERSON_LIKE_MUSICAL_ARTIST] Person {} rating MusicalArtist {} inserted in database in " + (System.currentTimeMillis() - before) + "ms", idPerson, idMusicalArtist);
+		} catch (Exception e) {
+			log.error("[PERSON_LIKE_MUSICAL_ARTIST] Error persisting Person {} rating MusicalArtist {}. Exception " + e, idPerson, idMusicalArtist);
+			logEx.error("Error persisting person like musical artist", e);
+		}
+	}
 
-                    ps.setInt(i++, rating);
+	public void remove(final Long idPerson, final Long idMusicalArtist) throws SQLException {
+		try {
+			final StringBuilder sb = new StringBuilder();
+			sb.append("DELETE FROM pessoacurteartistamusical WHERE ");
+			sb.append("id_pessoa = ? AND ");
+			sb.append("id_artista_musical = ?");
 
-                    ps.setDate(i++, new Date(System.currentTimeMillis()));
+			long before = System.currentTimeMillis();
+			getJdbc().update(new PreparedStatementCreator() {
+				public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
 
-                    return ps;
-                }
-            });
-            log.info("[PERSON_LIKE_MUSICAL_ARTIST] Person {} rating MusicalArtist {} inserted in database in " + (System.currentTimeMillis() - before) + "ms", idPerson, idMusicalArtist);
-        } catch (Exception e) {
-            log.error("[PERSON_LIKE_MUSICAL_ARTIST] Error persisting Person {} rating MusicalArtist {}. Exception " + e, idPerson, idMusicalArtist);
-            logEx.error("Error persisting person like musical artist", e);
-        }
-    }
+					PreparedStatement ps = connection.prepareStatement(sb.toString());
+					int i = 1;
 
-    public void remove(final Long idPerson, final Long idMusicalArtist) throws SQLException {
-        try {
-            final StringBuilder sb = new StringBuilder();
-            sb.append("DELETE FROM pessoacurteartistamusical WHERE ");
-            sb.append("id_pessoa = ? AND ");
-            sb.append("id_artista_musical = ?");
+					ps.setInt(i++, idPerson.intValue());
 
-            long before = System.currentTimeMillis();
-            getJdbc().update(new PreparedStatementCreator() {
-                public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+					ps.setInt(i++, idMusicalArtist.intValue());
+					return ps;
+				}
+			});
+			log.info("[PERSON_LIKE_MUSICAL_ARTIST] Person {} rating MusicalArtist {} removed from database in " + (System.currentTimeMillis() - before) + "ms", idPerson, idMusicalArtist);
+		} catch (Exception e) {
+			log.error("[PERSON_LIKE_MUSICAL_ARTIST] Error removing Person {} rating MusicalArtist {}. Exception " + e, idPerson, idMusicalArtist);
+			logEx.error("Error removing colleague", e);
+		}
+	}
 
-                    PreparedStatement ps = connection.prepareStatement(sb.toString());
-                    int i = 1;
+	public void removeAllForArtist(final Long idMusicalArtist) throws SQLException {
+		try {
+			final StringBuilder sb = new StringBuilder();
+			sb.append("DELETE FROM pessoacurteartistamusical WHERE ");
+			sb.append("id_artista_musical = ?");
 
-                    ps.setInt(i++, idPerson.intValue());
+			long before = System.currentTimeMillis();
+			getJdbc().update(new PreparedStatementCreator() {
+				public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
 
-                    ps.setInt(i++, idMusicalArtist.intValue());
-                    return ps;
-                }
-            });
-            log.info("[PERSON_LIKE_MUSICAL_ARTIST] Person {} rating MusicalArtist {} removed from database in " + (System.currentTimeMillis() - before) + "ms", idPerson, idMusicalArtist);
-        } catch (Exception e) {
-            log.error("[PERSON_LIKE_MUSICAL_ARTIST] Error removing Person {} rating MusicalArtist {}. Exception " + e, idPerson, idMusicalArtist);
-            logEx.error("Error removing colleague", e);
-        }
-    }
+					PreparedStatement ps = connection.prepareStatement(sb.toString());
 
-    public void removeAllForArtist(final Long idMusicalArtist) throws SQLException {
-        try {
-            final StringBuilder sb = new StringBuilder();
-            sb.append("DELETE FROM pessoacurteartistamusical WHERE ");
-            sb.append("id_artista_musical = ?");
+					ps.setInt(1, idMusicalArtist.intValue());
 
-            long before = System.currentTimeMillis();
-            getJdbc().update(new PreparedStatementCreator() {
-                public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+					return ps;
+				}
+			});
+			log.info("[PERSON_LIKE_MUSICAL_ARTIST] Ratings for MusicalArtist {} removed from database in " + (System.currentTimeMillis() - before) + "ms", idMusicalArtist);
+		} catch (Exception e) {
+			log.error("[PERSON_LIKE_MUSICAL_ARTIST] Error removing ratings for MusicalArtist {}. Exception " + e, idMusicalArtist);
+			logEx.error("Error removing ratings for MusicalArtist", e);
+		}
+	}
 
-                    PreparedStatement ps = connection.prepareStatement(sb.toString());
+	public void removeAllForPerson(final Long idPerson) throws SQLException {
+		try {
+			final StringBuilder sb = new StringBuilder();
+			sb.append("DELETE FROM pessoacurteartistamusical WHERE ");
+			sb.append("id_pessoa = ?");
 
-                    ps.setInt(1, idMusicalArtist.intValue());
+			long before = System.currentTimeMillis();
+			getJdbc().update(new PreparedStatementCreator() {
+				public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
 
-                    return ps;
-                }
-            });
-            log.info("[PERSON_LIKE_MUSICAL_ARTIST] Ratings for MusicalArtist {} removed from database in " + (System.currentTimeMillis() - before) + "ms", idMusicalArtist);
-        } catch (Exception e) {
-            log.error("[PERSON_LIKE_MUSICAL_ARTIST] Error removing ratings for MusicalArtist {}. Exception " + e, idMusicalArtist);
-            logEx.error("Error removing ratings for MusicalArtist", e);
-        }
-    }
+					PreparedStatement ps = connection.prepareStatement(sb.toString());
 
-    public void removeAllForPerson(final Long idPerson) throws SQLException {
-        try {
-            final StringBuilder sb = new StringBuilder();
-            sb.append("DELETE FROM pessoacurteartistamusical WHERE ");
-            sb.append("id_pessoa = ?");
+					ps.setInt(1, idPerson.intValue());
 
-            long before = System.currentTimeMillis();
-            getJdbc().update(new PreparedStatementCreator() {
-                public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+					return ps;
+				}
+			});
+			log.info("[PERSON_LIKE_MUSICAL_ARTIST] Person {} ratings removed from database in " + (System.currentTimeMillis() - before) + "ms", idPerson);
+		} catch (Exception e) {
+			log.error("[PERSON_LIKE_MUSICAL_ARTIST] Error removing Person {} ratings. Exception " + e, idPerson);
+			logEx.error("Error removing person ratings", e);
+		}
+	}
 
-                    PreparedStatement ps = connection.prepareStatement(sb.toString());
+	@Override
+	public Map<Long, Integer> getAllForPerson(Long idPerson) throws SQLException {
+		Map<Long, Integer> result = null;
+		try {
+			final StringBuilder sb = new StringBuilder();
+			sb.append("SELECT * FROM PessoaCurteArtistaMusical WHERE id_pessoa = ?");
 
-                    ps.setInt(1, idPerson.intValue());
+			long before = System.currentTimeMillis();
+			List<Map<String, Object>> rows = getJdbc().queryForList(sb.toString(), idPerson);
+			result = new HashMap<Long, Integer>();
 
-                    return ps;
-                }
-            });
-            log.info("[PERSON_LIKE_MUSICAL_ARTIST] Person {} ratings removed from database in " + (System.currentTimeMillis() - before) + "ms", idPerson);
-        } catch (Exception e) {
-            log.error("[PERSON_LIKE_MUSICAL_ARTIST] Error removing Person {} ratings. Exception " + e, idPerson);
-            logEx.error("Error removing person ratings", e);
-        }
-    }
+			for (Map<String, Object> row : rows) {
+				result.put(new Long((Integer) row.get("id_artista_musical")), Integer.valueOf(row.get("nota").toString()));
+			}
 
-    @Override
-    public Map<Long, Integer> getAllForPerson(Long idPerson) throws SQLException {
-        Map<Long, Integer> result = null;
-        try {
-            final StringBuilder sb = new StringBuilder();
-            sb.append("SELECT * FROM PessoaCurteArtistaMusical WHERE id_pessoa = ?");
+			log.info("[PERSON_LIKE_MUSICAL_ARTIST] All Likes for Person {} found in database in " + (System.currentTimeMillis() - before) + "ms", idPerson);
+		} catch (Exception e) {
+			log.error("[PERSON_LIKE_MUSICAL_ARTIST] Error searching for all likes for Person {}. Exception " + e, idPerson);
+			logEx.error("Error searching for all likes", e);
+		}
 
-            long before = System.currentTimeMillis();
-            List<Map<String, Object>> rows = getJdbc().queryForList(sb.toString(), idPerson);
-            result = new HashMap<Long, Integer>();
+		return result;
+	}
 
-            for (Map<String, Object> row : rows) {
-                result.put(new Long((Integer) row.get("id_artista_musical")), Integer.valueOf(row.get("nota").toString()));
-            }
+	@Override
+	public void updateLike(final Long idPerson, final Long idMusicalArtist, final Integer rate) throws SQLException {
+		try {
+			final StringBuilder sb = new StringBuilder();
+			sb.append("UPDATE pessoacurteartistamusical SET nota = ? WHERE");
+			sb.append(" id_pessoa = ? AND id_artista_musical = ?");
 
-            log.info("[PERSON_LIKE_MUSICAL_ARTIST] All Likes for Person {} found in database in " + (System.currentTimeMillis() - before) + "ms", idPerson);
-        } catch (Exception e) {
-            log.error("[PERSON_LIKE_MUSICAL_ARTIST] Error searching for all likes for Person {}. Exception " + e, idPerson);
-            logEx.error("Error searching for all likes", e);
-        }
+			long before = System.currentTimeMillis();
+			getJdbc().update(new PreparedStatementCreator() {
+				public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
 
-        return result;
-    }
+					PreparedStatement ps = connection.prepareStatement(sb.toString());
+					int i = 1;
 
-    @Override
-    public void updateLike(final Long idPerson, final Long idMusicalArtist, final Integer rate) throws SQLException {
-        try {
-            final StringBuilder sb = new StringBuilder();
-            sb.append("UPDATE pessoacurteartistamusical SET nota = ? WHERE");
-            sb.append(" id_pessoa = ? AND id_artista_musical = ?");
+					ps.setInt(i++, rate);
 
-            long before = System.currentTimeMillis();
-            getJdbc().update(new PreparedStatementCreator() {
-                public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+					ps.setInt(i++, idPerson.intValue());
 
-                    PreparedStatement ps = connection.prepareStatement(sb.toString());
-                    int i = 1;
+					ps.setInt(i++, idMusicalArtist.intValue());
 
-                    ps.setInt(i++, rate);
-
-                    ps.setInt(i++, idPerson.intValue());
-
-                    ps.setInt(i++, idMusicalArtist.intValue());
-
-                    return ps;
-                }
-            });
-            log.info("[PERSON_LIKE_MUSICAL_ARTIST] Person {} MusicalArtist {} ratings updated in " + (System.currentTimeMillis() - before) + "ms", idPerson, idMusicalArtist);
-        } catch (Exception e) {
-            log.error("[PERSON_LIKE_MUSICAL_ARTIST] Error updating Person {} MusicalArtist {} ratings. Exception " + e, idPerson);
-            logEx.error("Error updating person ratings", e);
-        }
-    }
+					return ps;
+				}
+			});
+			log.info("[PERSON_LIKE_MUSICAL_ARTIST] Person {} MusicalArtist {} ratings updated in " + (System.currentTimeMillis() - before) + "ms", idPerson, idMusicalArtist);
+		} catch (Exception e) {
+			log.error("[PERSON_LIKE_MUSICAL_ARTIST] Error updating Person {} MusicalArtist {} ratings. Exception " + e, idPerson);
+			logEx.error("Error updating person ratings", e);
+		}
+	}
 
 }

@@ -9,33 +9,26 @@ import org.slf4j.LoggerFactory;
 
 public class Shutdown extends Thread {
 
-    private static Logger log = LoggerFactory.getLogger(Shutdown.class);
-    private static Logger logEx = LoggerFactory.getLogger(TCBookConstants.LOG_NAME_EXCEPTIONS);
+	private static Logger log = LoggerFactory.getLogger(Shutdown.class);
+	private static Logger logEx = LoggerFactory.getLogger(TCBookConstants.LOG_NAME_EXCEPTIONS);
 
-    /*
-     * (non-Javadoc)
-     * @see java.lang.Thread#run()
-     */
-    @Override
-    public void run() {
-        Long before = System.currentTimeMillis();
-        log.info("TCBookMain is shutting down...");
+	@Override
+	public void run() {
+		Long before = System.currentTimeMillis();
+		log.info("TCBookMain is shutting down...");
 
-        try {
-            // stop web server
-            TCBookMain.getWebServer().shutdown();
-        } catch (Exception e) {
-            logEx.error("Error shutting down WebServer.", e);
-        }
+		try {
+			TCBookMain.getWebServer().shutdown();
+		} catch (Exception e) {
+			logEx.error("Error shutting down WebServer.", e);
+		}
 
-        try {
-            // stop DataSource connection
-            DataSourceManager.getInstance().closeDataSource(TCBookMain.DATABASE_ALIAS,
-                    DataSourceType.valueOf(TCBookProperties.getInstance().getString("tcbook.db.type")));
-        } catch (Exception e) {
-            logEx.error("Error shutting down DataSource connection.", e);
-        }
+		try {
+			DataSourceManager.getInstance().closeDataSource(TCBookMain.DATABASE_ALIAS, DataSourceType.valueOf(TCBookProperties.getInstance().getString("tcbook.db.type")));
+		} catch (Exception e) {
+			logEx.error("Error shutting down DataSource connection.", e);
+		}
 
-        log.info("TCBook Ended. Time it took: " + (System.currentTimeMillis() - before) + "ms.");
-    }
+		log.info("TCBook Ended. Time it took: " + (System.currentTimeMillis() - before) + "ms.");
+	}
 }

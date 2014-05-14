@@ -14,140 +14,125 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by caiouvini on 5/13/14.
- */
 public class CityDAOImpl extends DAO implements CityDAO {
 
-    private static CityDAOImpl instance;
+	private static CityDAOImpl instance;
 
-    private static final String DB_ALIAS = "TCBOOK_DB";
+	private static Logger log = LoggerFactory.getLogger(TCBookConstants.LOG_NAME_DAO);
+	private static Logger logEx = LoggerFactory.getLogger(TCBookConstants.LOG_NAME_EXCEPTIONS);
 
-    private static Logger log = LoggerFactory.getLogger(TCBookConstants.LOG_NAME_DAO);
-    private static Logger logEx = LoggerFactory.getLogger(TCBookConstants.LOG_NAME_EXCEPTIONS);
+	private CityDAOImpl() {
+		super();
+	}
 
-    private CityDAOImpl() {
-        super();
-    }
+	public static CityDAOImpl getInstance() {
+		if (instance == null) {
+			instance = new CityDAOImpl();
+		}
+		return instance;
+	}
 
-    public static CityDAOImpl getInstance() {
-        if (instance == null) {
-            instance = new CityDAOImpl();
-        }
-        return instance;
-    }
+	public City findForID(Long idCity) {
+		City result = null;
+		try {
+			final StringBuilder sb = new StringBuilder();
+			sb.append("SELECT * FROM Cidade WHERE id = ?");
 
-    @Override
-    protected String getDatabaseAlias() {
-        return DB_ALIAS;
-    }
+			long before = System.currentTimeMillis();
+			List<Map<String, Object>> rows = getJdbc().queryForList(sb.toString(), idCity);
 
-    @Override
-    protected DataSourceType getDataSourceType() {
-        return DataSourceType.valueOf(TCBookProperties.getInstance().getString("tcbook.db.type"));
-    }
+			if (rows != null && rows.size() > 0) {
+				result = new City();
+				Map<String, Object> row = rows.get(0);
 
-    public City findForID(Long idCity) {
-        City result = null;
-        try {
-            final StringBuilder sb = new StringBuilder();
-            sb.append("SELECT * FROM Cidade WHERE id = ?");
+				result.setId(new Long((Integer) row.get("id")));
+				result.setName(new String(row.get("nome_cidade").toString()));
+			}
 
-            long before = System.currentTimeMillis();
-            List<Map<String, Object>> rows = getJdbc().queryForList(sb.toString(), idCity);
+			log.info("[CITY] City for id {} found in database in " + (System.currentTimeMillis() - before) + "ms", idCity);
+		} catch (Exception e) {
+			log.error("[CITY] Error searching city for id {}. Exception " + e, idCity);
+			logEx.error("Error searching city", e);
+		}
 
-            if (rows != null && rows.size() > 0) {
-                result = new City();
-                Map<String, Object> row = rows.get(0);
+		return result;
+	}
 
-                result.setId(new Long((Integer) row.get("id")));
-                result.setName(new String(row.get("nome_cidade").toString()));
-            }
+	public City findForName(String cityName) {
+		City result = null;
+		try {
+			final StringBuilder sb = new StringBuilder();
+			sb.append("SELECT * FROM Cidade WHERE nome_cidade = ?");
 
-            log.info("[CITY] City for id {} found in database in " + (System.currentTimeMillis() - before) + "ms", idCity);
-        } catch (Exception e) {
-            log.error("[CITY] Error searching city for id {}. Exception " + e, idCity);
-            logEx.error("Error searching city", e);
-        }
+			long before = System.currentTimeMillis();
+			List<Map<String, Object>> rows = getJdbc().queryForList(sb.toString(), cityName);
 
-        return result;
-    }
+			if (rows != null && rows.size() > 0) {
+				result = new City();
+				Map<String, Object> row = rows.get(0);
 
-    public City findForName(String cityName) {
-        City result = null;
-        try {
-            final StringBuilder sb = new StringBuilder();
-            sb.append("SELECT * FROM Cidade WHERE nome_cidade = ?");
+				result.setId(new Long((Integer) row.get("id")));
+				result.setName(new String(row.get("nome_cidade").toString()));
+			}
 
-            long before = System.currentTimeMillis();
-            List<Map<String, Object>> rows = getJdbc().queryForList(sb.toString(), cityName);
+			log.info("[CITY] City for name {} found in database in " + (System.currentTimeMillis() - before) + "ms", cityName);
+		} catch (Exception e) {
+			log.error("[CITY] Error searching city for name {}. Exception " + e, cityName);
+			logEx.error("Error searching city", e);
+		}
 
-            if (rows != null && rows.size() > 0) {
-                result = new City();
-                Map<String, Object> row = rows.get(0);
+		return result;
+	}
 
-                result.setId(new Long((Integer) row.get("id")));
-                result.setName(new String(row.get("nome_cidade").toString()));
-            }
+	@Override
+	public void insert(final City city) throws SQLException {
+		try {
+			final StringBuilder sb = new StringBuilder();
+			sb.append("INSERT INTO Cidade");
+			sb.append(" (nome_cidade)");
+			sb.append(" VALUES (?)");
 
-            log.info("[CITY] City for name {} found in database in " + (System.currentTimeMillis() - before) + "ms", cityName);
-        } catch (Exception e) {
-            log.error("[CITY] Error searching city for name {}. Exception " + e, cityName);
-            logEx.error("Error searching city", e);
-        }
+			long before = System.currentTimeMillis();
+			getJdbc().update(new PreparedStatementCreator() {
+				public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
 
-        return result;
-    }
+					PreparedStatement ps = connection.prepareStatement(sb.toString());
+					int i = 1;
 
-    @Override
-    public void insert(final City city) throws SQLException {
-        try {
-            final StringBuilder sb = new StringBuilder();
-            sb.append("INSERT INTO Cidade");
-            sb.append(" (nome_cidade)");
-            sb.append(" VALUES (?)");
+					ps.setString(i++, city.getName());
 
-            long before = System.currentTimeMillis();
-            getJdbc().update(new PreparedStatementCreator() {
-                public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+					return ps;
+				}
+			});
+			log.info("[CITY_DAO] City {} inserted in database in " + (System.currentTimeMillis() - before) + "ms", city);
+		} catch (Exception e) {
+			log.error("[CITY_DAO] Error persisting City {}. Exception " + e, city);
+			logEx.error("Error persisting City", e);
+		}
+	}
 
-                    PreparedStatement ps = connection.prepareStatement(sb.toString());
-                    int i = 1;
+	@Override
+	public void remove(final Long idCity) throws SQLException {
+		try {
+			final StringBuilder sb = new StringBuilder();
+			sb.append("DELETE FROM Cidade WHERE id = ?");
 
-                    ps.setString(i++, city.getName());
+			long before = System.currentTimeMillis();
+			getJdbc().update(new PreparedStatementCreator() {
+				public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
 
-                    return ps;
-                }
-            });
-            log.info("[CITY_DAO] City {} inserted in database in " + (System.currentTimeMillis() - before) + "ms", city);
-        } catch (Exception e) {
-            log.error("[CITY_DAO] Error persisting City {}. Exception " + e, city);
-            logEx.error("Error persisting City", e);
-        }
-    }
+					PreparedStatement ps = connection.prepareStatement(sb.toString());
 
-    @Override
-    public void remove(final Long idCity) throws SQLException {
-        try {
-            final StringBuilder sb = new StringBuilder();
-            sb.append("DELETE FROM Cidade WHERE id = ?");
+					ps.setInt(1, idCity.intValue());
 
-            long before = System.currentTimeMillis();
-            getJdbc().update(new PreparedStatementCreator() {
-                public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
-
-                    PreparedStatement ps = connection.prepareStatement(sb.toString());
-
-                    ps.setInt(1, idCity.intValue());
-
-                    return ps;
-                }
-            });
-            log.info("[CITY_DAO] City id: {} removed from database in " + (System.currentTimeMillis() - before) + "ms", idCity);
-        } catch (Exception e) {
-            log.error("[CITY_DAO] Error removing City id: {}. Exception " + e, idCity);
-            logEx.error("Error removing City", e);
-        }
-    }
+					return ps;
+				}
+			});
+			log.info("[CITY_DAO] City id: {} removed from database in " + (System.currentTimeMillis() - before) + "ms", idCity);
+		} catch (Exception e) {
+			log.error("[CITY_DAO] Error removing City id: {}. Exception " + e, idCity);
+			logEx.error("Error removing City", e);
+		}
+	}
 
 }

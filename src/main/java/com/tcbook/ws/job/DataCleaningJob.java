@@ -10,21 +10,21 @@ import java.util.Date;
 
 public class DataCleaningJob {
 
-    private static final Logger log = LoggerFactory.getLogger(DataCleaningJob.class);
-    private static final Logger logEx = LoggerFactory.getLogger(TCBookConstants.LOG_NAME_EXCEPTIONS);
+	private static final Logger log = LoggerFactory.getLogger(DataCleaningJob.class);
+	private static final Logger logEx = LoggerFactory.getLogger(TCBookConstants.LOG_NAME_EXCEPTIONS);
 
-    private static MusicalArtistDAO musicalArtistDAO = MusicalArtistDAOImpl.getInstance();
+	private static MusicalArtistDAO musicalArtistDAO = MusicalArtistDAOImpl.getInstance();
 
-    public static void cleanData() {
-        long before = System.currentTimeMillis();
-        try {
-            log.info("[TCBOOK] Started DataCleaningJob on {}.", new Date());
+	public static void cleanData() {
+		long before = System.currentTimeMillis();
+		try {
+			log.info("[TCBOOK] Started DataCleaningJob on {}.", new Date());
 
-        } catch (Exception e) {
+		} catch (Exception e) {
 
-        } finally {
-            log.info("[TCBOOK] Finished DataCleaningJob in {}ms.", (System.currentTimeMillis() - before));
-        }
-    }
+		} finally {
+			log.info("[TCBOOK] Finished DataCleaningJob in {}ms.", (System.currentTimeMillis() - before));
+		}
+	}
 
 }

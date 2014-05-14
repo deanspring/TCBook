@@ -19,8 +19,6 @@ public class PersonDAOImpl extends DAO implements PersonDAO {
 
 	private static PersonDAOImpl instance;
 
-	private static final String DB_ALIAS = "TCBOOK_DB";
-
 	private static Logger log = LoggerFactory.getLogger(TCBookConstants.LOG_NAME_DAO);
 	private static Logger logEx = LoggerFactory.getLogger(TCBookConstants.LOG_NAME_EXCEPTIONS);
 
@@ -33,16 +31,6 @@ public class PersonDAOImpl extends DAO implements PersonDAO {
 			instance = new PersonDAOImpl();
 		}
 		return instance;
-	}
-
-	@Override
-	protected String getDatabaseAlias() {
-		return DB_ALIAS;
-	}
-
-	@Override
-	protected DataSourceType getDataSourceType() {
-		return DataSourceType.valueOf(TCBookProperties.getInstance().getString("tcbook.db.type"));
 	}
 
 	@Override

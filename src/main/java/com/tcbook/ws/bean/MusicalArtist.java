@@ -14,7 +14,7 @@ public class MusicalArtist {
 
 	private String url;
 
-    private String mbid;
+	private String mbid;
 
 	public Long getId() {
 		return id;
@@ -63,11 +63,11 @@ public class MusicalArtist {
 		return EqualsBuilder.reflectionEquals(this, obj);
 	}
 
-    public String getMbid() {
-        return mbid;
-    }
+	public String getMbid() {
+		return mbid;
+	}
 
-    public void setMbid(String mbid) {
-        this.mbid = mbid;
-    }
+	public void setMbid(String mbid) {
+		this.mbid = mbid;
+	}
 }

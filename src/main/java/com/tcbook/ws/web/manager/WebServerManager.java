@@ -80,7 +80,7 @@ public class WebServerManager implements Runnable {
 		servletContext.addServlet(tcbookServletHolder, "/*");
 		servletContext.setContextPath("/tcbook/s");
 
-		servletContext.setConnectorNames(new String[] {connector.getName()});
+		servletContext.setConnectorNames(new String[] { connector.getName() });
 
 		return servletContext;
 	}

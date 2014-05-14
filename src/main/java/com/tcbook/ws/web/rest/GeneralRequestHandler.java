@@ -14,37 +14,37 @@ import javax.ws.rs.core.Response;
 @Path("/general")
 public class GeneralRequestHandler {
 
-    private static Logger logReqAnswered = LoggerFactory.getLogger(TCBookConstants.LOG_NAME_REQUESTS_ANSWERED);
+	private static Logger logReqAnswered = LoggerFactory.getLogger(TCBookConstants.LOG_NAME_REQUESTS_ANSWERED);
 
-    public GeneralRequestHandler() {
-    }
+	public GeneralRequestHandler() {
+	}
 
-    @GET
-    @Path("ping")
-    public String handlePing() {
-        logReqAnswered.info("Answered ping.");
-        return "OK";
-    }
+	@GET
+	@Path("ping")
+	public String handlePing() {
+		logReqAnswered.info("Answered ping.");
+		return "OK";
+	}
 
-    @GET
-    @Path("data_cleaning")
-    public Response cleanData() {
-        DataCleaningJob.cleanData();
-        return Response.ok().build();
-    }
+	@GET
+	@Path("data_cleaning")
+	public Response cleanData() {
+		DataCleaningJob.cleanData();
+		return Response.ok().build();
+	}
 
-    @GET
-    @Path("data_extraction")
-    public Response extractData() {
-        DataExtractionJob.extractData();
-        return Response.ok().build();
-    }
+	@GET
+	@Path("data_extraction")
+	public Response extractData() {
+		DataExtractionJob.extractData();
+		return Response.ok().build();
+	}
 
-    @GET
-    @Path("update_genres")
-    public Response updateGenres() {
-        GenresJob.updateGenres();
-        return Response.ok().build();
-    }
+	@GET
+	@Path("update_genres")
+	public Response updateGenres() {
+		GenresJob.updateGenres();
+		return Response.ok().build();
+	}
 
 }
