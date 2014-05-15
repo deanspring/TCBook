@@ -17,4 +17,6 @@ public interface PersonLikeMusicalArtistDAO {
 
 	public void updateLike(Long idPerson, Long idMusicalArtist, Integer rate) throws SQLException;
 
+	public void dataCleaning();
+
 }

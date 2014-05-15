@@ -12,11 +12,11 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
 @Path("/general")
-public class GeneralRequestHandler {
+public class GeneralRS {
 
 	private static Logger logReqAnswered = LoggerFactory.getLogger(TCBookConstants.LOG_NAME_REQUESTS_ANSWERED);
 
-	public GeneralRequestHandler() {
+	public GeneralRS() {
 	}
 
 	@GET

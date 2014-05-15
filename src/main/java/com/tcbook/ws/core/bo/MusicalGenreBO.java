@@ -35,6 +35,8 @@ public class MusicalGenreBO {
 	}
 
 	public List<String> getAllNamesFromList(List<MusicalGenre> genres) {
+		if (genres == null)
+			return new ArrayList<String>();
 		List<String> genreNames = new ArrayList<String>();
 
 		for (MusicalGenre genre : genres) {
