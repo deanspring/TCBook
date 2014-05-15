@@ -45,7 +45,7 @@ public class DataCleaningJob {
 		List<MusicalArtist> artists = musicalArtistDAO.findAll();
 
 		for (int i = 0; i < artists.size(); i++)
-		    if (!mbids.add(artists.get(i).getMbid())) {
+		    if (artists.get(i).getMbid() != null && !mbids.add(artists.get(i).getMbid())) {
 				musicalArtistDAO.remove(artists.get(i).getId());
 		        artists.remove(i--);
 			}

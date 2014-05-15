@@ -123,7 +123,7 @@ public class MusicalArtistDAOImpl extends DAO implements MusicalArtistDAO {
 	public void remove(final Long id) throws SQLException {
 		try {
 			final StringBuilder sb = new StringBuilder();
-			sb.append("DELETE FROM artistamusical WHERE id = ?");
+			sb.append("DELETE FROM ArtistaMusical WHERE id = ?");
 
 			long before = System.currentTimeMillis();
 			getJdbc().update(new PreparedStatementCreator() {

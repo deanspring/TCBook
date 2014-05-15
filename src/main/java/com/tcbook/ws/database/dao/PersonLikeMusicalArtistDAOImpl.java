@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 
-import com.tcbook.ws.bean.MusicalArtist;
 import com.tcbook.ws.util.TCBookConstants;
 
 public class PersonLikeMusicalArtistDAOImpl extends DAO implements PersonLikeMusicalArtistDAO {
@@ -203,12 +201,14 @@ public class PersonLikeMusicalArtistDAOImpl extends DAO implements PersonLikeMus
 		try {
 			long before = System.currentTimeMillis();
 			getJdbc().batchUpdate(
-					new String[] { "ALTER TABLE Pessoa CurteArtistaMusical ADD COLUMN mbid VARCHAR(255);",
-							"UPDATE PessoaCurteArtistaMusical p SET p.mbid = (SELECT mbid FROM ArtistaMusical a WHERE a.id = p.id_artsta);",
-							"UPDATE PessoaCurteArtistaMusical p SET p.id_artista = (SELECT id FROM ArtistaMusical a WHERE a.mbid = p.mbid LIMIT 1);" });
+					new String[] { "UPDATE PessoaCurteArtistaMusical p SET p.mbid = (SELECT mbid FROM ArtistaMusical a WHERE a.id = p.id_artista_musical);",
+							"UPDATE PessoaCurteArtistaMusical p SET p.id_artista_musical = (SELECT id FROM ArtistaMusical a WHERE a.mbid = p.mbid LIMIT 1) WHERE p.mbid IS NOT NULL;",
+							"UPDATE GeneroArtistaMusical g SET g.mbid = (SELECT mbid FROM ArtistaMusical a WHERE a.id = g.id_artista_musical);",
+							"UPDATE GeneroArtistaMusical g SET g.id_artista_musical = (SELECT id FROM ArtistaMusical a WHERE a.mbid = g.mbid LIMIT 1) WHERE g.mbid IS NOT NULL;"});
 
 			log.info("[MUSICAL_ARTIST_DAO] All MusicalArtist found in database in " + (System.currentTimeMillis() - before) + "ms");
 		} catch (Exception e) {
+			e.printStackTrace();
 			log.error("[MUSICAL_ARTIST_DAO] Error searching for all MusicalArtist. Exception " + e);
 			logEx.error("Error searching for all MusicalArtist", e);
 		}
