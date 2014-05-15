@@ -134,4 +134,31 @@ public class CountryDAOImpl extends DAO implements CountryDAO {
 		}
 	}
 
+	@Override
+	public Country findByRegion(Long idRegion) {
+		Country result = new Country();
+		try {
+			final StringBuilder sb = new StringBuilder();
+			sb.append("SELECT * FROM Pais WHERE id = (SELECT id_pais FROM Regiao WHERE id = ?)");
+
+			long before = System.currentTimeMillis();
+			List<Map<String, Object>> rows = getJdbc().queryForList(sb.toString(), idRegion);
+
+			if (rows != null && rows.size() > 0) {
+				result = new Country();
+				Map<String, Object> row = rows.get(0);
+
+				result.setId(new Long((Integer) row.get("id")));
+				result.setName(new String(row.get("nome_pais").toString()));
+			}
+
+			log.info("[CITY] Country by Region {} found in database in " + (System.currentTimeMillis() - before) + "ms", idRegion);
+		} catch (Exception e) {
+			log.error("[CITY] Error searching Country by Region {}. Exception " + e, idRegion);
+			logEx.error("Error searching country", e);
+		}
+
+		return result;
+	}
+
 }

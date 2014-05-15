@@ -1,8 +1,8 @@
 package com.tcbook.ws.database.dao;
 
-import com.tcbook.ws.bean.Country;
-
 import java.sql.SQLException;
+
+import com.tcbook.ws.bean.Country;
 
 public interface CountryDAO {
 
@@ -13,5 +13,7 @@ public interface CountryDAO {
 	public void insert(Country country) throws SQLException;
 
 	public void remove(Long idContry) throws SQLException;
+
+	public Country findByRegion(Long idRegion);
 
 }

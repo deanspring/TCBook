@@ -134,4 +134,31 @@ public class CityDAOImpl extends DAO implements CityDAO {
 		}
 	}
 
+	@Override
+	public City findByRegion(Long idRegion) {
+		City result = new City();
+		try {
+			final StringBuilder sb = new StringBuilder();
+			sb.append("SELECT * FROM Cidade WHERE id = (SELECT id_cidade FROM Regiao WHERE id = ?)");
+
+			long before = System.currentTimeMillis();
+			List<Map<String, Object>> rows = getJdbc().queryForList(sb.toString(), idRegion);
+
+			if (rows != null && rows.size() > 0) {
+				result = new City();
+				Map<String, Object> row = rows.get(0);
+
+				result.setId(new Long((Integer) row.get("id")));
+				result.setName(new String(row.get("nome_cidade").toString()));
+			}
+
+			log.info("[CITY] City by Region {} found in database in " + (System.currentTimeMillis() - before) + "ms", idRegion);
+		} catch (Exception e) {
+			log.error("[CITY] Error searching city by Region {}. Exception " + e, idRegion);
+			logEx.error("Error searching city", e);
+		}
+
+		return result;
+	}
+
 }

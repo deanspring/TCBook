@@ -15,6 +15,7 @@ import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 
 import com.tcbook.ws.bean.MusicalArtist;
+import com.tcbook.ws.bean.MusicalGenre;
 import com.tcbook.ws.util.TCBookConstants;
 
 public class MusicalArtistDAOImpl extends DAO implements MusicalArtistDAO {
@@ -198,5 +199,34 @@ public class MusicalArtistDAOImpl extends DAO implements MusicalArtistDAO {
 
 			return artist;
 		}
+	}
+
+	@Override
+	public List<MusicalGenre> getGenresOfArtist(Long artistId) {
+		List<MusicalGenre> results = new ArrayList<MusicalGenre>();
+		try {
+			final StringBuilder sb = new StringBuilder();
+			sb.append("SELECT * FROM GeneroMusical WHERE id IN (SELECT id_genero FROM GeneroArtistaMusical WHERE id_artista_musical = ?)");
+
+			long before = System.currentTimeMillis();
+			List<Map<String, Object>> rows = getJdbc().queryForList(sb.toString(), artistId);
+
+			if (rows != null && rows.size() > 0) {
+				for (Map<String, Object> row : rows) {
+					MusicalGenre musicalGenre = new MusicalGenre();
+
+					musicalGenre.setId(new Long((Integer) row.get("id")));
+					musicalGenre.setName(new String(row.get("nome_genero").toString()));
+					results.add(musicalGenre);
+				}
+			}
+
+			log.info("[CITY] Genre for id {} found in database in " + (System.currentTimeMillis() - before) + "ms", artistId);
+		} catch (Exception e) {
+			log.error("[CITY] Error searching genre of artist {}. Exception " + e, artistId);
+			logEx.error("Error searching genre", e);
+		}
+
+		return results;
 	}
 }

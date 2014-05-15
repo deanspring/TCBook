@@ -11,9 +11,8 @@
 					<th class="panel-heading">Nota</th>
 					<th class="panel-heading">#</th>
 					<th class="panel-heading">Nome</th>
-					<th class="panel-heading">Genero</th>
+					<th class="panel-heading">Gênero</th>
 					<th class="panel-heading">País</th>
-					<th class="panel-heading">URL</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -26,10 +25,9 @@
    						<input type="text" class="form-control" placeholder="Nota"/>
   					</td>
 					<td>{{=artist.id}}</td>
-					<td>{{=artist.artisticName}}</td>
-					<td>{{=artist.genre}}</td>
-					<td>{{=artist.country}}</td>
-					<td>{{=artist.url}}</td>
+					<td><a href="{{=artist.url}}">{{=artist.artisticName}}</a></td>
+					<td>{{=artist.genres ? artist.genres.join(', ') : ''}}</td>
+					<td>{{=artist.country || ''}}</td>
 				</tr>
 			{{~}}
 			</tbody>

@@ -14,4 +14,6 @@ public interface CityDAO {
 
 	public void remove(Long idCity) throws SQLException;
 
+	public City findByRegion(Long idRegion);
+
 }
