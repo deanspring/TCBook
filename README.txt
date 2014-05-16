@@ -21,6 +21,8 @@ TCBook/src/main/java/: diretório contendo o código fonte do back-end (Java)
 	  	- PersonLikeMusicalArtistDAO / PersonLikeMusicalArtistDAOImpl: Interações com banco de dados relativo à tabela "PessoaCurteArtistaMusical"
 	  - database.datasource:
 	  	- Contém classes relativas à conexão com banco de dados.
+	  - job
+	    - Contém a implementação dos jobs de data extraction e data cleaning
 	  - util:
 	  	- Classes utiitárias: gerenciamento de configuração e constantes comuns ao sistema
 	  - web.manager:

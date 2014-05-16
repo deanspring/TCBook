@@ -160,3 +160,22 @@ CREATE TABLE Regiao(
 
 ALTER TABLE ArtistaMusical DROP COLUMN pais;
 ALTER TABLE ArtistaMusical ADD COLUMN id_regiao INT;
+
+ALTER TABLE GeneroArtistaMusical ADD COLUMN mbid varchar(255);
+ALTER TABLE PessoaCurteArtistaMusical ADD COLUMN mbid varchar(255);
+
+DROP TABLE ArtistaMuicalInspirou;
+
+CREATE TABLE ArtistaMusicalSemelhante(
+	id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+	nome_artistico VARCHAR(255) NOT NULL,
+	mbid VARCHAR(255)
+);
+
+
+CREATE TABLE SemelhancaArtistaMusical(
+	id_artista INT NOT NULL,
+	id_artista_similar INT NOT NULL,
+  FOREIGN KEY(id_artista) REFERENCES ArtistaMusical(id),
+  FOREIGN KEY(id_artista_similar) REFERENCES ArtistaMusicalSemelhante(id)
+);

@@ -7,6 +7,17 @@ tcbook.db.password=tcbook123
 
 (Caso seja necessário rodar a aplicação, o arquivo config/tcbook.properties contém os dados acima, basta adequá-los)
 
-O TCBook utiliza o schema descrito em 'schema.sql' (é basicamente o mesmo submetido nas atividades anteriores, porém com alguns novos campos) e os dados importados dos arquivos xml da atividade passada.
+O TCBook utiliza a base montada em 'prepare_database.sql' (é basicamente o mesmo submetido nas atividades anteriores, porém com alguns novos campos) e os dados importados dos arquivos xml da atividade passada, adicionadas alterações para suportar as operaçoes de data extraction e data cleaning.
 
 Após ter a base de dados configurada corretamente, basta rodar a aplicação via alguma IDE (Eclipse/IntelliJ com certeza são suportados).
+
+
+As operações para a tarefa foram feitas na seguinte ordem:
+
+http://localhost:9001/tcbook/s/general/update_genres
+
+http://localhost:9001/tcbook/s/general/data_extraction
+
+http://localhost:9001/tcbook/s/general/data_cleaning
+
+http://localhost:9001/tcbook/s/general/extract_similar
