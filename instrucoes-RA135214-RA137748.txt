@@ -12,7 +12,7 @@ O TCBook utiliza a base montada em 'prepare_database.sql' (é basicamente o mesm
 Após ter a base de dados configurada corretamente, basta rodar a aplicação via alguma IDE (Eclipse/IntelliJ com certeza são suportados).
 
 
-As operações para a tarefa foram feitas na seguinte ordem:
+As operações para a tarefa  de data cleaning / data extraction foram feitas na seguinte ordem:
 
 http://localhost:9001/tcbook/s/general/update_genres
 
