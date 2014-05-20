@@ -7,6 +7,8 @@ import java.util.List;
 
 public interface MusicalGenresDAO {
 
+    public MusicalGenre find(Long id);
+
 	public List<MusicalGenre> findAll() throws SQLException;
 
 	public void insert(String genreName) throws SQLException;

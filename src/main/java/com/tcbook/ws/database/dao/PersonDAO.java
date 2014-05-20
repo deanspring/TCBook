@@ -1,9 +1,10 @@
 package com.tcbook.ws.database.dao;
 
+import com.tcbook.ws.bean.Person;
+
 import java.sql.SQLException;
 import java.util.List;
-
-import com.tcbook.ws.bean.Person;
+import java.util.Map;
 
 public interface PersonDAO {
 
@@ -20,5 +21,7 @@ public interface PersonDAO {
 	public void removeColleaguesForPerson(Long idPerson) throws SQLException;
 
 	public void removeBlockingsForPerson(Long idPerson) throws SQLException;
+
+    public Map<Long, Integer> topTenEclecticPeople();
 
 }

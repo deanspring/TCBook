@@ -8,6 +8,7 @@ import com.tcbook.ws.bean.*;
 import com.tcbook.ws.core.bo.MusicalArtistBO;
 import com.tcbook.ws.core.bo.MusicalGenreBO;
 import com.tcbook.ws.core.bo.RegionBO;
+import com.tcbook.ws.util.MusicalArtistUtils;
 import com.tcbook.ws.util.TCBookConstants;
 import com.tcbook.ws.util.TCBookProperties;
 import org.apache.commons.lang3.StringUtils;
@@ -17,17 +18,8 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.net.URL;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
+import java.io.*;
+import java.net.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -54,7 +46,7 @@ public class DataExtractionJob {
             List<MusicalArtist> musicalArtists = musicalArtistBO.getAll();
             for (MusicalArtist artist : musicalArtists) {
 
-                String artistName = getArtistNameFromWikipediaURLNormalized(artist);
+                String artistName = MusicalArtistUtils.getArtistNameFromWikipediaURLNormalized(artist);
 
                 if (!hasAlreadyRetrivenDataOfTheArtist(artist)) {
                     retriveDataOfTheArtist(echonest, artist, artistName);
@@ -87,10 +79,6 @@ public class DataExtractionJob {
 
     protected static boolean hasAlreadyRetrivenDataOfTheArtist(MusicalArtist artist) {
         return StringUtils.isNotBlank(artist.getMbid());
-    }
-
-    protected static String getArtistNameFromWikipediaURLNormalized(MusicalArtist artist) throws Exception {
-        return normalize(artist.getUrl().replace("http://en.wikipedia.org/wiki/", ""));
     }
 
     private static void extractLastFMData(MusicalArtist artist, String artistName, String apiKey, EchoNestAPI echonest) {
@@ -417,10 +405,6 @@ public class DataExtractionJob {
         builder.append("&artist=").append(URLEncoder.encode(artistName, "UTF-8"));
 
         return builder.toString();
-    }
-
-    private static String normalize(String s) throws Exception {
-        return URLDecoder.decode(s.toLowerCase(), "UTF-8").replaceAll("_\\(.+\\)", "").replaceAll("_", " ");
     }
 
 }

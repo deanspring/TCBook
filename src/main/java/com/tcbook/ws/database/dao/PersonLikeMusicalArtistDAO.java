@@ -19,4 +19,20 @@ public interface PersonLikeMusicalArtistDAO {
 
 	public void dataCleaning();
 
+    public Map<String, Float> generalRatings();
+
+    public Map<Long, Float> averageByArtist();
+
+    public Map<Long, Float> topTwentyAveragesByArtist();
+
+    public Map<Long, Integer> topTenPopularArtists();
+
+    public Map<Long, Float> topTenStandardDeviationByArtist();
+
+    public Map<Long, Integer> artistsPopularity();
+
+    public Map<Integer, Integer> peopleLikesByAmount();
+
+    public Map<Integer, Integer> artistsLikesByAmount();
+
 }
