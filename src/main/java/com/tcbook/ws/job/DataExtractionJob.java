@@ -280,7 +280,7 @@ public class DataExtractionJob {
                     ArtistLocation location = null;
 
                     try {
-                        echonestArtist.getArtistLocation();
+                        location = echonestArtist.getArtistLocation();
                     } catch (NullPointerException e) {
                         //echoNest nullpointer exception bug
                     }
