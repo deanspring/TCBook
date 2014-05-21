@@ -159,6 +159,7 @@ public class DataExtractionJob {
 
         if (artistGenresName == null) {
             logText.append("GENRES: NOT FOUND!");
+        } else {
             logText.append("GENRES: ").append(artistGenresName);
 
             // retrieve MusicalGenre information from the filtered genre names
