@@ -11,8 +11,13 @@
 			if ($(this).attr('href') == '#main')
 				mainContainer.find('#main').slideDown().addClass('active');
 		});
+
 		$('a[href="#pessoas"]').click(function() {
 			people.load();
+		});
+
+		$('a[href="#estatisticas"]').click(function() {
+			statistics.load();
 		});
 	});
 

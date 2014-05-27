@@ -1,17 +1,129 @@
-body { padding-top: 70px; }
+body {
+	padding-top: 70px;
+}
 
-.navbar {border-radius: 0;}
+.navbar {
+	border-radius: 0;
+}
 
-.margin-top {margin-top: 12px;}
-.margin-bottom {margin-bottom: 12px;}
-.margin-left {margin-left: 12px;}
-.margin-right {margin-right: 12px;}
+.margin-top {
+	margin-top: 12px;
+}
 
-.float-left {float: left;}
-.float-right {float: right;}
+.margin-bottom {
+	margin-bottom: 12px;
+}
 
-.row:not([role="main"]) {display: none;}
+.margin-left {
+	margin-left: 12px;
+}
 
-.new-person-form {display: none;}
+.margin-right {
+	margin-right: 12px;
+}
 
-.glyphicon {cursor: pointer;}
+.float-left {
+	float: left;
+}
+
+.float-right {
+	float: right;
+}
+
+.row
+
+
+
+
+
+
+
+
+:not
+
+
+
+
+ 
+
+
+
+
+(
+[
+role
+=
+"main"
+]
+
+
+
+
+ 
+
+
+
+
+)
+{
+display
+
+
+
+
+
+
+
+
+:
+
+
+
+
+ 
+
+
+
+
+none
+
+
+
+
+
+
+
+
+;
+}
+.new-person-form {
+	display: none;
+}
+
+.glyphicon {
+	cursor: pointer;
+}
+
+.bs-callout {
+	margin: 20px 0;
+	padding: 20px;
+	border-left: 3px solid #eee;
+}
+
+.bs-callout-info {
+	background-color: #f4f8fa;
+	border-color: #5bc0de;
+}
+
+.bs-callout h4 {
+	margin-top: 0;
+	margin-bottom: 5px;
+}
+
+.bs-callout-info h4 {
+	color: #5bc0de;
+}
+
+.bs-callout p:last-child {
+	margin-bottom: 0;
+}

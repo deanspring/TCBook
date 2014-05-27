@@ -1,0 +1,150 @@
+<div>
+	<h1>
+		Estatísticas
+	</h1>
+	<div class="row">
+		<div class="bs-callout bs-callout-info">
+			<h4>Ratings de artistas</h4>
+			<p>
+				<ul>
+					<li>
+						<label>Desvio padrão</label> <span class="decimal">{{=it.general_ratings.desvio}}</span>
+					</li>
+					<li>
+						<label>Média</label> <span class="decimal">{{=it.general_ratings.media}}</span>
+					</li>
+				</ul>
+			</p>
+		</div>
+	</div>
+	<hr></hr>
+	<div class="row">
+		<div class="bs-callout bs-callout-info col-xs-6">
+			<h4>(rating médio) Nome dos 20 artistas com maior ratings</h4>
+			<p>
+				<ul>
+					{{for (name in it.average_by_artist) { }}
+					<li>
+						(<span class="decimal">{{=it.average_by_artist[name]}}</span>) <label>{{=name}}</label>
+					</li>
+					{{ } }}
+				</ul>
+			</p>
+		</div>
+		<div class="bs-callout bs-callout-info col-xs-6">
+			<h4>curtidos por ao menos duas pessoas</h4>
+			<p>
+				<ul>
+					{{for (name in it.top_twenty_averages_by_artist) { }}
+					<li>
+						(<span class="decimal">{{=it.top_twenty_averages_by_artist[name]}}</span>) <label>{{=name}}</label>
+					</li>
+					{{ } }}
+				</ul>
+			</p>
+		</div>
+	</div>	
+	<hr></hr>
+	<div class="row">
+		<div class="bs-callout bs-callout-info col-xs-6 clearfix">
+			<h4>(colocação) Nome dos 10 artistas mais populares</h4>
+			<p>
+				<ul>
+					{{for (name in it.top_ten_popular_artists) { }}
+					<li>
+						(<span class="decimal">{{=it.top_ten_popular_artists[name]}}</span>) <label>{{=name}}</label>
+					</li>
+					{{ } }}
+				</ul>
+			</p>
+		</div>
+		<div class="bs-callout bs-callout-info col-xs-6">
+			<h4>(rating) Nome dos 10 artistas com o maior variabilidade de ratings</h4>
+			<p>
+				<ul>
+					{{for (name in it.top_ten_standard_deviation_by_artist) { }}
+					<li>
+						(<span class="decimal">{{=it.top_ten_standard_deviation_by_artist[name]}}</span>) <label>{{=name}}</label>
+					</li>
+					{{ } }}
+				</ul>
+			</p>
+		</div>
+	</div>
+	<hr></hr>
+	<div class="row">
+		<div class="bs-callout bs-callout-info">
+			<h4>10 conhecidos (duas pessoas ligadas pelo relacionamento 'knows') que compartilham o maior número de artistas curtidos</h4>
+			<p>
+				<ul>
+					{{for (name in it.top_ten_knows_with_most_shared_artists) { }}
+					<li>
+						(<span>{{=it.top_ten_knows_with_most_shared_artists[name]}}</span>) <label>{{=name}}</label>
+					</li>
+					{{ } }}
+				</ul>
+			</p>
+		</div>
+	</div>
+	<hr></hr>
+	<h4>Artista vs popularidade</h4>
+	<div class="row">
+		{{var artistsPopularity = [];}}
+		{{var maxPopularity = 0;}}
+		{{for (var idArtist in it.artists_popularity) { artistsPopularity.push({id : idArtist, popularity : it.artists_popularity[idArtist]}); if (it.artists_popularity[idArtist] > maxPopularity) maxPopularity = it.artists_popularity[idArtist];}}}
+		{{artistsPopularity = artistsPopularity.sort(function(a, b) { if (a.popularity > b.popularity) return -1; return a.popularity == b.popularity ? 0 : 1});}}
+		{{var f = 1 / artistsPopularity.length;}}
+		{{~artistsPopularity :artist:i}}
+			{{var c = parseInt(i * f * 240) + 10;}}
+			{{var height = artist.popularity / maxPopularity * 300 || 0;}}
+			<div class="float-left" style="background: rgb({{=c}}, {{=c}}, {{=200}}); border-top: 1px solid #333; border-left: 1px solid #333; height: {{=height}}px; margin-top: {{=300 - height}}px; width: {{=f * 100}}%;"></div>		
+		{{~}} 
+	</div>
+	<hr></hr>
+	<h4>Pessoa vs quantos artistas curtidos</h4>
+	<div class="row" style="padding: 25px">
+		{{var peopleLikesByAmount = [];}}
+		{{var maxFrequency = 0;}}
+		{{for (var likes in it.people_likes_by_amount) { peopleLikesByAmount.push({likes : parseInt(likes), frequency : it.people_likes_by_amount[likes]}); if (it.people_likes_by_amount[likes] > maxFrequency) maxFrequency = it.people_likes_by_amount[likes];}}}
+		{{peopleLikesByAmount = peopleLikesByAmount.sort(function(a, b) { if (b.likes > a.likes) return -1; return a.likes == b.likes ? 0 : 1});}}
+		{{var f = 1 / peopleLikesByAmount.length;}}
+		{{~peopleLikesByAmount :like:i}}
+			{{var c = parseInt(i * f * 240) + 10;}}
+			{{var height = like.frequency / maxFrequency * 300 || 0;}}
+			<div class="float-left" style="background: rgb({{=c}}, {{=c}}, {{=200}}); border-top: 1px solid #333; border-left: 1px solid #333; height: {{=height}}px; margin-top: {{=300 - height}}px; width: {{=f * 100}}%; position:relative">
+				<div style="position: absolute; top: -20px; left: 48%">{{=like.frequency}}</div>
+				<div style="position: absolute; bottom: -20px; left: 48%">{{=like.likes}}</div>
+			</div>		
+		{{~}} 
+	</div>
+	<hr></hr>
+	<h4>Artistas vs quantos curtidas tem</h4>
+	<div class="row" style="padding: 25px">
+		{{var artistsLikesByAmount = [];}}
+		{{var maxFrequency = 0;}}
+		{{for (var likes in it.artists_likes_by_amount) { artistsLikesByAmount.push({likes : parseInt(likes), frequency : it.artists_likes_by_amount[likes]}); if (it.artists_likes_by_amount[likes] > maxFrequency) maxFrequency = it.artists_likes_by_amount[likes];}}}
+		{{artistsLikesByAmount = artistsLikesByAmount.sort(function(a, b) { if (b.likes > a.likes) return -1; return a.likes == b.likes ? 0 : 1});}}
+		{{var f = 1 / artistsLikesByAmount.length;}}
+		{{console.info(artistsLikesByAmount, maxFrequency);}}
+		{{~artistsLikesByAmount :like:i}}
+			{{var c = parseInt(i * f * 240) + 10;}}
+			{{var height = like.frequency / maxFrequency * 300 || 0;}}
+			<div class="float-left" style="background: rgb({{=c}}, {{=c}}, {{=200}}); border-top: 1px solid #333; border-left: 1px solid #333; height: {{=height}}px; margin-top: {{=300 - height}}px; width: {{=f * 100}}%; position:relative">
+				<div style="position: absolute; top: -20px; left: 48%">{{=like.frequency}}</div>
+				<div style="position: absolute; bottom: -20px; left: 48%">{{=like.likes}}</div>
+			</div>		
+		{{~}} 
+	</div>
+		<div class="row">
+		<div class="bs-callout bs-callout-info">
+			<h4>Modelos probabilísticos que se assemelham aos gráficos</h4>
+			<p>
+				O primeiro e terceiro gŕafico se aproximam da distribuição de probabilidade geométrica, enquanto o segundo a distribuição normal.
+			</p>
+		</div>
+	</div>
+	<hr></hr>
+
+	<script>
+	</script>
+</div>
