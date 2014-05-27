@@ -1,6 +1,7 @@
 package com.tcbook.ws.database.dao;
 
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 
 public interface PersonLikeMusicalArtistDAO {
@@ -34,5 +35,7 @@ public interface PersonLikeMusicalArtistDAO {
     public Map<Integer, Integer> peopleLikesByAmount();
 
     public Map<Integer, Integer> artistsLikesByAmount();
+
+    public List<Long> artistsForPersonWithMinimumRate(Long personId, Integer minimumRate);
 
 }

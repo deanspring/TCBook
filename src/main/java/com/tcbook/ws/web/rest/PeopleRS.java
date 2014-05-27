@@ -108,6 +108,7 @@ public class PeopleRS {
     @GET
     @Path("/{id}/recommend")
     public Response recommendArtistsByPersonId(@PathParam("id") Long personId) {
+
         long before = System.currentTimeMillis();
 
         List<MusicalArtist> recommendedArtists = personBO.recommendArtistsForPerson(personId);

@@ -9,10 +9,7 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class PersonLikeMusicalArtistDAOImpl extends DAO implements PersonLikeMusicalArtistDAO {
 
@@ -428,5 +425,28 @@ public class PersonLikeMusicalArtistDAOImpl extends DAO implements PersonLikeMus
         return result;
     }
 
+    @Override
+    public List<Long> artistsForPersonWithMinimumRate(Long personId, Integer minimumRate) {
+        List<Long> result = null;
+        try {
+            final StringBuilder sb = new StringBuilder();
+            sb.append("select id_artista_musical from PessoaCurteArtistaMusical where nota >= ? and id_Pessoa=? limit 15");
+
+            long before = System.currentTimeMillis();
+            List<Map<String, Object>> rows = getJdbc().queryForList(sb.toString(), minimumRate, personId);
+            result = new ArrayList<Long>();
+
+            for (Map<String, Object> row : rows) {
+                result.add(new Long((Integer) row.get("id_artista_musical")));
+            }
+
+            log.info("[PERSON_LIKE_MUSICAL_ARTIST] Artists with rate at minimum {} for person {} found in database in " + (System.currentTimeMillis() - before) + "ms", minimumRate, personId);
+        } catch (Exception e) {
+            log.error("[PERSON_LIKE_MUSICAL_ARTIST] Error searching for artists with rate at minimum {} for person {} ", minimumRate, personId);
+            logEx.error("Error searching for artists with minimum likes", e);
+        }
+
+        return result;
+    }
 
 }

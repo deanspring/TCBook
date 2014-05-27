@@ -4,13 +4,13 @@ import com.tcbook.ws.util.TCBookConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class MusicalArtistGenresDAOImpl extends DAO implements MusicalArtistGenresDAO {
 
@@ -108,6 +108,107 @@ public class MusicalArtistGenresDAOImpl extends DAO implements MusicalArtistGenr
         }
 
         return result;
+    }
+
+    @Override
+    public Map<Long, Integer> getGroupedGenresForArtists(final List<Long> artists) {
+        Map<Long, Integer> result = null;
+        try {
+            String parameters = "";
+            for (Long l : artists) {
+                parameters += "?,";
+            }
+            parameters = parameters.substring(0, parameters.length() - 1);
+
+            final StringBuilder sb = new StringBuilder();
+            sb.append("select id_genero, count(1) as ocorrencias from GeneroArtistaMusical where id_artista_musical in ("+parameters+") group by id_genero");
+
+            long before = System.currentTimeMillis();
+
+            List<Pair<Long, Integer>> queryResult = getJdbc().query(new PreparedStatementCreator() {
+                public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+
+                    PreparedStatement ps = connection.prepareStatement(sb.toString());
+                    int i = 1;
+
+                    for (Long l : artists) {
+                        ps.setInt(i++, l.intValue());
+                    }
+
+                    return ps;
+                }
+            }, new RowMapper<Pair<Long, Integer>>() {
+                @Override
+                public Pair<Long, Integer> mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    Pair<Long, Integer> pair = new Pair<Long, Integer>();
+                    pair.setLeft(rs.getLong("id_genero"));
+                    pair.setRight(rs.getInt("ocorrencias"));
+                    return pair;
+                }
+            });
+
+
+            if (queryResult != null && !queryResult.isEmpty()) {
+                result = new HashMap<Long, Integer>();
+            }
+
+            for (Pair<Long, Integer> pair : queryResult) {
+                result.put(pair.getLeft(), pair.getRight());
+            }
+
+            log.info("[MUSICAL_ARTIST_GENRES] Popular genres for artists found in database in " + (System.currentTimeMillis() - before) + "ms");
+        } catch (Exception e) {
+            log.error("[MUSICAL_ARTIST_GENRES] Error searching for popular genres for artists. Exception " + e);
+            logEx.error("Error searching for popular genres for artists", e);
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<Long> findGenresByArtist(Long artistId) {
+        List<Long> result = null;
+        try {
+            final StringBuilder sb = new StringBuilder();
+            sb.append("select distinct(id_genero) from GeneroArtistaMusical where id_artista_musical=?");
+
+            long before = System.currentTimeMillis();
+            List<Map<String, Object>> rows = getJdbc().queryForList(sb.toString(), artistId);
+            result = new ArrayList<Long>();
+
+            for (Map<String, Object> row : rows) {
+                result.add(Long.valueOf(row.get("id_genero").toString()));
+            }
+
+            log.info("[MUSICAL_ARTIST_GENRES] Genres for artists found in database in " + (System.currentTimeMillis() - before) + "ms");
+        } catch (Exception e) {
+            log.error("[MUSICAL_ARTIST_GENRES] Error searching for genres for artists. Exception " + e);
+            logEx.error("Error searching for genres for artists", e);
+        }
+
+        return result;
+    }
+
+    private static class Pair<T, F> {
+
+        private T left;
+        private F right;
+
+        public T getLeft() {
+            return left;
+        }
+
+        public void setLeft(T left) {
+            this.left = left;
+        }
+
+        public F getRight() {
+            return right;
+        }
+
+        public void setRight(F right) {
+            this.right = right;
+        }
     }
 
 }
