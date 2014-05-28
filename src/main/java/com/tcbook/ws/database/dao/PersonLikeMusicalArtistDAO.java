@@ -38,4 +38,6 @@ public interface PersonLikeMusicalArtistDAO {
 
     public List<Long> artistsForPersonWithMinimumRate(Long personId, Integer minimumRate);
 
+    public Map<Long, Double> averagesForArtists(List<Long> artists);
+
 }

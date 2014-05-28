@@ -1,14 +1,14 @@
 package com.tcbook.ws.database.dao;
 
+import com.tcbook.ws.util.Pair;
 import com.tcbook.ws.util.TCBookConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.core.RowMapper;
 
-import java.sql.Connection;
+import java.sql.*;
 import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.*;
 
 public class PersonLikeMusicalArtistDAOImpl extends DAO implements PersonLikeMusicalArtistDAO {
@@ -444,6 +444,62 @@ public class PersonLikeMusicalArtistDAOImpl extends DAO implements PersonLikeMus
         } catch (Exception e) {
             log.error("[PERSON_LIKE_MUSICAL_ARTIST] Error searching for artists with rate at minimum {} for person {} ", minimumRate, personId);
             logEx.error("Error searching for artists with minimum likes", e);
+        }
+
+        return result;
+    }
+
+
+    @Override
+    public Map<Long, Double> averagesForArtists(final List<Long> artists) {
+        Map<Long, Double> result = null;
+        try {
+            String parameters = "";
+            for (Long l : artists) {
+                parameters += "?,";
+            }
+            parameters = parameters.substring(0, parameters.length() - 1);
+
+            final StringBuilder sb = new StringBuilder();
+            sb.append("select id_artista_musical, avg(nota) as media from PessoaCurteArtistaMusical where id_artista_musical in (" + parameters + ") group by id_artista_musical order by media desc");
+
+            long before = System.currentTimeMillis();
+
+            List<Pair<Long, Double>> queryResult = getJdbc().query(new PreparedStatementCreator() {
+                public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+
+                    PreparedStatement ps = connection.prepareStatement(sb.toString());
+                    int i = 1;
+
+                    for (Long l : artists) {
+                        ps.setInt(i++, l.intValue());
+                    }
+
+                    return ps;
+                }
+            }, new RowMapper<Pair<Long, Double>>() {
+                @Override
+                public Pair<Long, Double> mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    Pair<Long, Double> pair = new Pair<Long, Double>();
+                    pair.setLeft(rs.getLong("id_artista_musical"));
+                    pair.setRight(rs.getDouble("media"));
+                    return pair;
+                }
+            });
+
+
+            if (queryResult != null && !queryResult.isEmpty()) {
+                result = new HashMap<Long, Double>();
+            }
+
+            for (Pair<Long, Double> pair : queryResult) {
+                result.put(pair.getLeft(), pair.getRight());
+            }
+
+            log.info("[PERSON_LIKE_MUSICAL_ARTIST] Averages for artists found in database in " + (System.currentTimeMillis() - before) + "ms");
+        } catch (Exception e) {
+            log.error("[PERSON_LIKE_MUSICAL_ARTIST] Error searching for artists ratings averages. Exception " + e);
+            logEx.error("Error searching for searching artists ratings averages", e);
         }
 
         return result;

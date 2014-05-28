@@ -152,8 +152,10 @@ public class PersonBO {
 
     public List<MusicalArtist> recommendArtistsForPerson(Long personId) {
 
-        Map<Long, Double> artistsSelectedToBeRecommended = recommendationStep1(personId);
-        // TODO step2
+        Map<Long, Double> artistsSelectedToBeRecommended = new LinkedHashMap<Long, Double>();
+
+        recommendationStep1(personId, artistsSelectedToBeRecommended);
+        recommendationStep2(artistsSelectedToBeRecommended);
         // TODO step3
 
         List<MusicalArtist> result = new ArrayList<MusicalArtist>();
@@ -164,9 +166,7 @@ public class PersonBO {
         return result;
     }
 
-    private Map<Long, Double> recommendationStep1(Long personId) {
-
-        Map<Long, Double> result = new LinkedHashMap<Long, Double>();
+    private void recommendationStep1(Long personId, Map<Long, Double> artistsSelectedToBeRecommended) {
 
         Double step1Weight = TCBookProperties.getInstance().getDouble("tcbook.recommendation.step1.weight", 0.5);
         Integer minimumRate = TCBookProperties.getInstance().getInt("tcbook.recommendation.step1.minimum_rate", 3);
@@ -215,16 +215,7 @@ public class PersonBO {
             }
 
             // order the artists taking it's scores as reference
-            List<Map.Entry> pointsEntries = new ArrayList<Map.Entry>(pointsByArtist.entrySet());
-            Collections.sort(pointsEntries,
-                    new Comparator() {
-                        public int compare(Object o1, Object o2) {
-                            Map.Entry e1 = (Map.Entry) o1;
-                            Map.Entry e2 = (Map.Entry) o2;
-                            return ((Comparable) e2.getValue()).compareTo(e1.getValue()); // desc
-                        }
-                    }
-            );
+            List<Map.Entry> pointsEntries = orderArtistsToBeRecommendedScores(pointsByArtist);
 
             int i = 0;
             for (Map.Entry entry : pointsEntries) {
@@ -233,14 +224,49 @@ public class PersonBO {
                     break;
                 }
 
-                result.put((Long) entry.getKey(), (Double) entry.getValue());
+                artistsSelectedToBeRecommended.put((Long) entry.getKey(), (Double) entry.getValue());
                 i++;
             }
 
 
         }
+    }
 
-        return result;
+    private void recommendationStep2(Map<Long, Double> artistsSelectedToBeRecommended) {
+
+        Double step2Weight = TCBookProperties.getInstance().getDouble("tcbook.recommendation.step2.weight", 0.3);
+
+        // retrieve the rating averages of the selected artists
+        Map<Long, Double> averagesByArtist = personLikeMusicalArtistDAO.averagesForArtists(new ArrayList(artistsSelectedToBeRecommended.keySet()));
+
+        for (Map.Entry<Long, Double> entry : averagesByArtist.entrySet()) {
+            Double currentScore = artistsSelectedToBeRecommended.get(entry.getKey());
+            currentScore += (step2Weight * entry.getValue()) / 5; // update the artists scores (5 is the maximum rating)
+            artistsSelectedToBeRecommended.put(entry.getKey(), currentScore);
+        }
+
+        List<Map.Entry> pointsByArtists = orderArtistsToBeRecommendedScores(artistsSelectedToBeRecommended);
+        artistsSelectedToBeRecommended.clear(); // clear old data, will insert updated values
+
+        for (Map.Entry entry : pointsByArtists) { // insert updated scores
+            artistsSelectedToBeRecommended.put((Long) entry.getKey(), (Double) entry.getValue());
+        }
+
+    }
+
+    private List<Map.Entry> orderArtistsToBeRecommendedScores(Map<Long, Double> pointsByArtist) {
+        List<Map.Entry> pointsEntries = new ArrayList<Map.Entry>(pointsByArtist.entrySet());
+        Collections.sort(pointsEntries,
+                new Comparator() {
+                    public int compare(Object o1, Object o2) {
+                        Map.Entry e1 = (Map.Entry) o1;
+                        Map.Entry e2 = (Map.Entry) o2;
+                        return ((Comparable) e2.getValue()).compareTo(e1.getValue()); // desc
+                    }
+                }
+        );
+
+        return pointsEntries;
     }
 
 }

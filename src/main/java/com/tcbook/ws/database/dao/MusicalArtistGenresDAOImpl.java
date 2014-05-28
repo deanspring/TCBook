@@ -1,5 +1,6 @@
 package com.tcbook.ws.database.dao;
 
+import com.tcbook.ws.util.Pair;
 import com.tcbook.ws.util.TCBookConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -187,28 +188,6 @@ public class MusicalArtistGenresDAOImpl extends DAO implements MusicalArtistGenr
         }
 
         return result;
-    }
-
-    private static class Pair<T, F> {
-
-        private T left;
-        private F right;
-
-        public T getLeft() {
-            return left;
-        }
-
-        public void setLeft(T left) {
-            this.left = left;
-        }
-
-        public F getRight() {
-            return right;
-        }
-
-        public void setRight(F right) {
-            this.right = right;
-        }
     }
 
 }
