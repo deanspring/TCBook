@@ -40,4 +40,5 @@ public interface PersonLikeMusicalArtistDAO {
 
     public Map<Long, Double> averagesForArtists(List<Long> artists);
 
+    public Map<Long, Integer> artistsLikesByFriends(List<Long> artists, Long personId);
 }

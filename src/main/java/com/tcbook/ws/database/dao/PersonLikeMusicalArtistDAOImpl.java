@@ -505,4 +505,63 @@ public class PersonLikeMusicalArtistDAOImpl extends DAO implements PersonLikeMus
         return result;
     }
 
+    @Override
+    public Map<Long, Integer> artistsLikesByFriends(final List<Long> artists, final Long personId) {
+        Map<Long, Integer> result = null;
+        try {
+            String parameters = "";
+            for (Long l : artists) {
+                parameters += "?,";
+            }
+            parameters = parameters.substring(0, parameters.length() - 1);
+
+            final StringBuilder sb = new StringBuilder();
+            sb.append("select id_artista_musical, count(1) as ocorrencias from PessoaCurteArtistaMusical where " +
+                    "id_artista_musical in (" + parameters + ") and " +
+                    "id_pessoa in (select id_conhecido from Conhece where id_Pessoa=?) " +
+                    "group by id_artista_musical");
+
+            long before = System.currentTimeMillis();
+
+            List<Pair<Long, Integer>> queryResult = getJdbc().query(new PreparedStatementCreator() {
+                public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+
+                    PreparedStatement ps = connection.prepareStatement(sb.toString());
+                    int i = 1;
+
+                    for (Long l : artists) {
+                        ps.setInt(i++, l.intValue());
+                    }
+
+                    ps.setInt(i++, personId.intValue());
+
+                    return ps;
+                }
+            }, new RowMapper<Pair<Long, Integer>>() {
+                @Override
+                public Pair<Long, Integer> mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    Pair<Long, Integer> pair = new Pair<Long, Integer>();
+                    pair.setLeft(rs.getLong("id_artista_musical"));
+                    pair.setRight(rs.getInt("ocorrencias"));
+                    return pair;
+                }
+            });
+
+
+            if (queryResult != null && !queryResult.isEmpty()) {
+                result = new HashMap<Long, Integer>();
+            }
+
+            for (Pair<Long, Integer> pair : queryResult) {
+                result.put(pair.getLeft(), pair.getRight());
+            }
+
+            log.info("[PERSON_LIKE_MUSICAL_ARTIST] Artists likes for friends found in database in " + (System.currentTimeMillis() - before) + "ms");
+        } catch (Exception e) {
+            log.error("[PERSON_LIKE_MUSICAL_ARTIST] Error searching for artists likes for friends. Exception " + e);
+            logEx.error("Error searching for artists likes for friends", e);
+        }
+
+        return result;
+    }
 }

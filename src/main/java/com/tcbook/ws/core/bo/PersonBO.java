@@ -154,24 +154,33 @@ public class PersonBO {
 
         Map<Long, Double> artistsSelectedToBeRecommended = new LinkedHashMap<Long, Double>();
 
-        recommendationStep1(personId, artistsSelectedToBeRecommended);
-        recommendationStep2(artistsSelectedToBeRecommended);
-        // TODO step3
+        artistsSelectedToBeRecommended = recommendationStep1(personId, artistsSelectedToBeRecommended);
+        artistsSelectedToBeRecommended = recommendationStep2(artistsSelectedToBeRecommended);
+        artistsSelectedToBeRecommended = recommendationStep3(personId, artistsSelectedToBeRecommended);
 
+        Integer maxRecommendationResults = TCBookProperties.getInstance().getInt("tcbook.recommendation.max_results", 10);
+
+        int i = 0;
         List<MusicalArtist> result = new ArrayList<MusicalArtist>();
         for (Map.Entry<Long, Double> entry : artistsSelectedToBeRecommended.entrySet()) {
+            if (i >= maxRecommendationResults) {
+                break;
+            }
+
             result.add(musicalArtistDAO.find(entry.getKey()));
+            i++;
         }
 
         return result;
     }
 
-    private void recommendationStep1(Long personId, Map<Long, Double> artistsSelectedToBeRecommended) {
+    private Map<Long, Double> recommendationStep1(Long personId, Map<Long, Double> artistsSelectedToBeRecommended) {
+
+        Map<Long, Double> result = null;
 
         Double step1Weight = TCBookProperties.getInstance().getDouble("tcbook.recommendation.step1.weight", 0.5);
         Integer minimumRate = TCBookProperties.getInstance().getInt("tcbook.recommendation.step1.minimum_rate", 3);
         Integer step1MaxResults = TCBookProperties.getInstance().getInt("tcbook.recommendation.step1.max_results", 20);
-
 
         // retrieve the preferred artists
         List<Long> artists = personLikeMusicalArtistDAO.artistsForPersonWithMinimumRate(personId, minimumRate);
@@ -215,46 +224,72 @@ public class PersonBO {
             }
 
             // order the artists taking it's scores as reference
-            List<Map.Entry> pointsEntries = orderArtistsToBeRecommendedScores(pointsByArtist);
+            result = orderArtistsToBeRecommendedScores(pointsByArtist, step1MaxResults);
+        }
 
-            int i = 0;
-            for (Map.Entry entry : pointsEntries) {
+        return result != null ? result : artistsSelectedToBeRecommended;
+    }
 
-                if (i == step1MaxResults) { // select only the step1MaxResults best ranked artists
-                    break;
-                }
+    private Map<Long, Double> recommendationStep2(Map<Long, Double> artistsSelectedToBeRecommended) {
 
-                artistsSelectedToBeRecommended.put((Long) entry.getKey(), (Double) entry.getValue());
-                i++;
+        Map<Long, Double> result = null;
+
+        if (artistsSelectedToBeRecommended != null && !artistsSelectedToBeRecommended.isEmpty()) {
+            Double step2Weight = TCBookProperties.getInstance().getDouble("tcbook.recommendation.step2.weight", 0.3);
+
+            // retrieve the rating averages of the selected artists
+            Map<Long, Double> averagesByArtist = personLikeMusicalArtistDAO.averagesForArtists(new ArrayList(artistsSelectedToBeRecommended.keySet()));
+
+            for (Map.Entry<Long, Double> entry : averagesByArtist.entrySet()) {
+                Double currentScore = artistsSelectedToBeRecommended.get(entry.getKey());
+                currentScore += (step2Weight * entry.getValue()) / 5; // update the artists scores (5 is the maximum rating)
+                artistsSelectedToBeRecommended.put(entry.getKey(), currentScore);
             }
 
-
-        }
-    }
-
-    private void recommendationStep2(Map<Long, Double> artistsSelectedToBeRecommended) {
-
-        Double step2Weight = TCBookProperties.getInstance().getDouble("tcbook.recommendation.step2.weight", 0.3);
-
-        // retrieve the rating averages of the selected artists
-        Map<Long, Double> averagesByArtist = personLikeMusicalArtistDAO.averagesForArtists(new ArrayList(artistsSelectedToBeRecommended.keySet()));
-
-        for (Map.Entry<Long, Double> entry : averagesByArtist.entrySet()) {
-            Double currentScore = artistsSelectedToBeRecommended.get(entry.getKey());
-            currentScore += (step2Weight * entry.getValue()) / 5; // update the artists scores (5 is the maximum rating)
-            artistsSelectedToBeRecommended.put(entry.getKey(), currentScore);
+            result = orderArtistsToBeRecommendedScores(artistsSelectedToBeRecommended);
         }
 
-        List<Map.Entry> pointsByArtists = orderArtistsToBeRecommendedScores(artistsSelectedToBeRecommended);
-        artistsSelectedToBeRecommended.clear(); // clear old data, will insert updated values
-
-        for (Map.Entry entry : pointsByArtists) { // insert updated scores
-            artistsSelectedToBeRecommended.put((Long) entry.getKey(), (Double) entry.getValue());
-        }
+        return result != null ? result : artistsSelectedToBeRecommended;
 
     }
 
-    private List<Map.Entry> orderArtistsToBeRecommendedScores(Map<Long, Double> pointsByArtist) {
+    private Map<Long, Double> recommendationStep3(Long personId, Map<Long, Double> artistsSelectedToBeRecommended) {
+
+        Map<Long, Double> result = null;
+
+        if (artistsSelectedToBeRecommended != null && !artistsSelectedToBeRecommended.isEmpty()) {
+            Double step3Weight = TCBookProperties.getInstance().getDouble("tcbook.recommendation.step3.weight", 0.2);
+
+            // retrieve the amount of likes each artist received from friends of the given person
+            Map<Long, Integer> likesByArtist = personLikeMusicalArtistDAO.artistsLikesByFriends(new ArrayList(artistsSelectedToBeRecommended.keySet()), personId);
+
+            if (likesByArtist != null && !likesByArtist.isEmpty()) {
+                // find the max amount of times an artist is rated by friends of the given person
+                Integer maxOccurrences = -1;
+                for (Map.Entry<Long, Integer> entry : likesByArtist.entrySet()) {
+                    if (entry.getValue() > maxOccurrences) {
+                        maxOccurrences = entry.getValue();
+                    }
+                }
+
+                for (Map.Entry<Long, Integer> entry : likesByArtist.entrySet()) {
+                    Double currentScore = artistsSelectedToBeRecommended.get(entry.getKey());
+                    currentScore += (step3Weight * entry.getValue()) / maxOccurrences; // update the artists scores
+                    artistsSelectedToBeRecommended.put(entry.getKey(), currentScore);
+                }
+
+                result = orderArtistsToBeRecommendedScores(artistsSelectedToBeRecommended);
+            }
+        }
+
+        return result != null ? result : artistsSelectedToBeRecommended;
+    }
+
+    private Map<Long, Double> orderArtistsToBeRecommendedScores(Map<Long, Double> pointsByArtist) {
+        return orderArtistsToBeRecommendedScores(pointsByArtist, -1);
+    }
+
+    private Map<Long, Double> orderArtistsToBeRecommendedScores(Map<Long, Double> pointsByArtist, int maxResults) {
         List<Map.Entry> pointsEntries = new ArrayList<Map.Entry>(pointsByArtist.entrySet());
         Collections.sort(pointsEntries,
                 new Comparator() {
@@ -266,7 +301,27 @@ public class PersonBO {
                 }
         );
 
-        return pointsEntries;
+        Map<Long, Double> result = new LinkedHashMap<Long, Double>();
+
+        if (maxResults > -1) {
+            int i = 0;
+            for (Map.Entry entry : pointsEntries) {
+
+                if (i == maxResults) { // select only the maxResults first entries
+                    break;
+                }
+
+                result.put((Long) entry.getKey(), (Double) entry.getValue());
+                i++;
+            }
+        } else {
+            for (Map.Entry entry : pointsEntries) { // insert all ordered values
+                result.put((Long) entry.getKey(), (Double) entry.getValue());
+            }
+        }
+
+        return result;
+
     }
 
 }
