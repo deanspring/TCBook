@@ -1,0 +1,14 @@
+(i) Tecnologias utilizadas:
+	
+	- Nenhuma tecnologia nova foi utilizada para essa tarefa, apenas as tecnologias que já estavam listadas desde o início do desenvolvimento do serviço (Java JDK, Jetty web server, MySQL, Jersey)
+
+(ii) Critérios e Pesos:
+
+	Buscar bandas que a pessoa em questão ainda não curtiu de acordo com os seguintes critérios:
+
+	1) Peso 0.5: Quantidade de gêneros em comum com o conjunto de gêneros das 10 bandas que essa pessoa mais gosta (10 bandas curtidas com rating mais alto) (e deu nota >= 3)
+	2) Peso 0.3: Nota média dessa banda
+	3) Peso 0.2: Quantidade de conhecidos que gostam da banda
+
+(iii) Estratégia de Avaliação:
+	// TODO

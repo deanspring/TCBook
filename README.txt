@@ -53,3 +53,9 @@ TCBook/src/main/java/: diretório contendo o código fonte do back-end (Java)
                 - src/main/java/com/tcbook/ws/database/dao/PersonDAOImpl.java: Método topTenEclecticPeople()
                 - src/main/java/com/tcbook/ws/database/dao/PersonLikeMusicalArtistDAOImpl.java: Métodos generalRatings(), averageByArtist(), topTwentyAveragesByArtist(), topTenPopularArtists(), topTenStandardDeviationByArtist(), artistsPopularity(), peopleLikesByAmount() e artistsLikesByAmount()
                 - src/main/java/com/tcbook/ws/database/dao/RegionDAOImpl.java: Método topTenCountriesWithMostArtists()
+
+--> Tarefa de recomendação:
+    - Backend:
+        - As classes importantes são:
+            - src/main/java/com/tcbook/ws/core/bo/PersonBO.java : Contém o método recommendArtistsForPerson, responsável por toda a lógica de recomendação.
+            - src/main/java/com/tcbook/ws/database/dao/ : Os DAOs importantes são PersonLikeMusicalArtistDAOImpl.java e MusicalArtistGenresDAOImpl.java
