@@ -103,6 +103,25 @@
 	</div>
 	<hr></hr>
 	<div class="row">
+		<div class="bs-callout bs-callout-info">
+			<h4>8) 1º, 2º e 3º quartis das popularidades de artistas</h4>
+			<p>
+				<ul>
+					<li>
+						<label>1º quartil</label> <span class="decimal">{{=it.artists_popularity_quartis.first_quartil}}</span>
+					</li>
+					<li>
+						<label>2º quartil (mediana)</label> <span class="decimal">{{=it.artists_popularity_quartis.second_quartil}}</span>
+					</li>
+					<li>
+						<label>3º quartil</label> <span class="decimal">{{=it.artists_popularity_quartis.third_quartil}}</span>
+					</li>
+				</ul>
+			</p>
+		</div>
+	</div>
+	<hr></hr>
+	<div class="row">
 		<div class="bs-callout bs-callout-info" style="height: 370px;">
 			<h4>9) Artista vs popularidade</h4>
 			{{var artistsPopularity = [];}}
@@ -156,7 +175,7 @@
 			{{~}}
 		</div> 
 	</div>
-		<div class="row">
+	<div class="row">
 		<div class="bs-callout bs-callout-info">
 			<h4>12) Modelos probabilísticos que se assemelham aos gráficos</h4>
 			<p>
@@ -165,7 +184,34 @@
 		</div>
 	</div>
 	<hr></hr>
-
+	<div class="row">
+		<div class="bs-callout bs-callout-info">
+			<h4>13) (quantos) Nome dos 10 países com mais artistas</h4>
+			<p>
+				<ul>
+					{{for (name in it.top_ten_countries_with_most_artists) { }}
+					<li>
+						(<span class="decimal">{{=it.top_ten_countries_with_most_artists[name]}}</span>) <label>{{=name}}</label>
+					</li>
+					{{ } }}
+				</ul>
+			</p>
+		</div>
+	</div>
+	<div class="row">
+		<div class="bs-callout bs-callout-info">
+			<h4>14) (quantos gêneros) Nome das 10 pessoas que curtem mais gêneros musicais (gêneros dos artistas que ela curtiu)</h4>
+			<p>
+				<ul>
+					{{for (name in it.top_ten_eclectic_people) { }}
+					<li>
+						(<span class="decimal">{{=it.top_ten_eclectic_people[name]}}</span>) <label>{{=name}}</label>
+					</li>
+					{{ } }}
+				</ul>
+			</p>
+		</div>
+	</div>
 	<script>
 	</script>
 </div>

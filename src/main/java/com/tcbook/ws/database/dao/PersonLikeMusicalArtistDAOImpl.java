@@ -333,6 +333,52 @@ public class PersonLikeMusicalArtistDAOImpl extends DAO implements PersonLikeMus
 	}
 
 	@Override
+	public Map<String, Double> artistsPopularityQuartis() {
+		Map<String, Double> result = null;
+		try {
+			final StringBuilder sb = new StringBuilder();
+			sb.append("SELECT id_artista_musical, COUNT(1) AS ocorrencias FROM PessoaCurteArtistaMusical " + "GROUP BY id_artista_musical " + "ORDER BY ocorrencias DESC;");
+
+			long before = System.currentTimeMillis();
+			List<Map<String, Object>> rows = getJdbc().queryForList(sb.toString());
+			result = new LinkedHashMap<String, Double>();
+
+			result.put("first_quartil", getFirstQuartil(rows));
+			result.put("second_quartil", getSecondQuartil(rows));
+			result.put("third_quartil", getThirdQuartil(rows));
+
+			log.info("[PERSON_LIKE_MUSICAL_ARTIST] Artists popularity found in database in " + (System.currentTimeMillis() - before) + "ms");
+		} catch (Exception e) {
+			log.error("[PERSON_LIKE_MUSICAL_ARTIST] Error searching for artists popularity. Exception " + e);
+			logEx.error("Error searching for artists popularity ", e);
+		}
+
+		return result;
+	}
+
+	protected Double getFirstQuartil(List<Map<String, Object>> rows) {
+		return getNQuartil(rows, 1);
+	}
+
+	protected Double getSecondQuartil(List<Map<String, Object>> rows) {
+		return getNQuartil(rows, 2);
+	}
+
+	protected Double getThirdQuartil(List<Map<String, Object>> rows) {
+		return getNQuartil(rows, 3);
+	}
+
+	protected Double getNQuartil(List<Map<String, Object>> rows, int n) {
+		if (rows == null || rows.isEmpty())
+			return 0.0d;
+
+		if (Math.ceil(n * rows.size() / 4.0d) % 2 == 1)
+			return Double.valueOf(rows.get((int) Math.ceil(n * rows.size() / 4.0d)).get("ocorrencias").toString());
+
+		return Double.valueOf(rows.get(n * rows.size() / 4).get("ocorrencias").toString()) + Double.valueOf(rows.get(n * rows.size() / 4 + 1).get("ocorrencias").toString());
+	}
+
+	@Override
 	public Map<Long, Integer> artistsPopularity() {
 		Map<Long, Integer> result = null;
 		try {

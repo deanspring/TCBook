@@ -57,6 +57,10 @@ public class StatisticsBO {
 		return result;
 	}
 
+	public Map<String, Double> getArtistsPopularityQuartis() {
+		return personLikeMusicalArtistDAO.artistsPopularityQuartis();
+	}
+
 	public Map<Long, Integer> getArtistsPopularity() {
 		return personLikeMusicalArtistDAO.artistsPopularity();
 	}

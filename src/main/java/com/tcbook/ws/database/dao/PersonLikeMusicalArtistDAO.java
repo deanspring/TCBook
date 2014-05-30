@@ -30,6 +30,8 @@ public interface PersonLikeMusicalArtistDAO {
 
     public Map<Long, Float> topTenStandardDeviationByArtist();
 
+    public Map<String, Double> artistsPopularityQuartis();
+    
     public Map<Long, Integer> artistsPopularity();
 
     public Map<Integer, Integer> peopleLikesByAmount();

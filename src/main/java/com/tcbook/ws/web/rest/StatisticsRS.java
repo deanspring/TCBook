@@ -121,7 +121,19 @@ public class StatisticsRS {
 		}
 	}
 
-	// 8 - ????
+	// 8
+	@GET
+	@Path("artists_popularity_quartis")
+	public Response artistsPopularityQuartis() {
+		Map<String, Double> artistsPopularityQuartis = statisticsBO.getArtistsPopularityQuartis();
+
+		try {
+			return Response.ok(MAPPER.writeValueAsString(artistsPopularityQuartis)).build();
+		} catch (Exception e) {
+			logEx.error("[STATISTICS] Error reading artists popularity quartis " + artistsPopularityQuartis + " as json.", e);
+			return Response.serverError().build();
+		}
+	}
 
 	// 9
 	@GET
@@ -165,8 +177,6 @@ public class StatisticsRS {
 		}
 	}
 
-	// 12 - ????
-
 	// 13-a
 	@GET
 	@Path("top_ten_countries_with_most_artists")
@@ -199,18 +209,20 @@ public class StatisticsRS {
 	@Path("all")
 	public Response getAll() {
 		JsonObject statistics = new JsonObject();
+
 		statistics.add("general_ratings", new GsonBuilder().create().toJsonTree(statisticsBO.getGeneralRatings()));
-		statistics.add("average_by_artist", new GsonBuilder().create().toJsonTree(statisticsBO.getAverageByArtist())); 
+		statistics.add("average_by_artist", new GsonBuilder().create().toJsonTree(statisticsBO.getAverageByArtist()));
 		statistics.add("top_twenty_averages_by_artist", new GsonBuilder().create().toJsonTree(statisticsBO.getTopTwentyAveragesByArtist()));
 		statistics.add("top_ten_popular_artists", new GsonBuilder().create().toJsonTree(statisticsBO.getTopTenPopularArtists()));
 		statistics.add("top_ten_standard_deviation_by_artist", new GsonBuilder().create().toJsonTree(statisticsBO.getTopTenStandardDeviationByArtist()));
 		statistics.add("top_five_popular_genres", new GsonBuilder().create().toJsonTree(statisticsBO.getTopFivePopularGenres()));
 		statistics.add("top_ten_knows_with_most_shared_artists", new GsonBuilder().create().toJsonTree(statisticsBO.getTopTenKnownWithMostSharedArtists()));
+		statistics.add("artists_popularity_quartis", new GsonBuilder().create().toJsonTree(statisticsBO.getArtistsPopularityQuartis()));
 		statistics.add("artists_popularity", new GsonBuilder().create().toJsonTree(statisticsBO.getArtistsPopularity()));
 		statistics.add("people_likes_by_amount", new GsonBuilder().create().toJsonTree(statisticsBO.getPeopleLikesByAmount()));
 		statistics.add("artists_likes_by_amount", new GsonBuilder().create().toJsonTree(statisticsBO.getArtistsLikesByAmount()));
-		statistics.add("top_ten_countries_with_most_artists", new GsonBuilder().create().toJsonTree(statisticsBO.getTopTenCountriesWithMostArtists())); 
-		statistics.add("top_ten_eclectic_people", new GsonBuilder().create().toJsonTree(statisticsBO.getTopTenEclecticPeople())); 
+		statistics.add("top_ten_countries_with_most_artists", new GsonBuilder().create().toJsonTree(statisticsBO.getTopTenCountriesWithMostArtists()));
+		statistics.add("top_ten_eclectic_people", new GsonBuilder().create().toJsonTree(statisticsBO.getTopTenEclecticPeople()));
 
 		return Response.ok(statistics.toString()).build();
 	}

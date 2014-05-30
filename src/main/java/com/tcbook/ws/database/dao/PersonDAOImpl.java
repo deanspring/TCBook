@@ -229,12 +229,12 @@ public class PersonDAOImpl extends DAO implements PersonDAO {
         Map<Long, Integer> result = null;
         try {
             final StringBuilder sb = new StringBuilder();
-            sb.append("select p.id, count(1) as numero_generos from Pessoa p, GeneroMusical g where g.id in ( " +
-                    "select ga.id_genero from GeneroArtistaMusical ga where ga.id_artista_musical in ( " +
-                    "select pc.id_artista_musical from PessoaCurteArtistaMusical pc where pc.id_Pessoa = p.id " +
-                    ") " +
-                    ") " +
-                    "group by p.id " +
+            sb.append("SELECT p.id, count(1) as numero_generos from Pessoa p, GeneroMusical g where g.id in ( " +
+                    	"SELECT ga.id_genero from GeneroArtistaMusical ga where ga.id_artista_musical in ( " +
+                    		"SELECT pc.id_artista_musical from PessoaCurteArtistaMusical pc where pc.id_Pessoa = p.id " +
+                    		") " +
+                    	") " +
+                    "GROUP BY p.id " +
                     "ORDER BY numero_generos desc LIMIT 10;");
 
             long before = System.currentTimeMillis();

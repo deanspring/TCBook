@@ -89,7 +89,10 @@ public class MusicalArtistGenresDAOImpl extends DAO implements MusicalArtistGenr
 		Map<Long, Integer> result = null;
 		try {
 			final StringBuilder sb = new StringBuilder();
-			sb.append("select id_genero, count(1) as ocorrencias from GeneroArtistaMusical " + "GROUP BY id_genero " + "ORDER BY ocorrencias DESC " + "LIMIT 5;");
+			sb.append("select id_genero, count(1) as ocorrencias from GeneroArtistaMusical " + 
+					"GROUP BY id_genero " +
+					"ORDER BY ocorrencias DESC " + 
+					"LIMIT 5;");
 
 			long before = System.currentTimeMillis();
 			List<Map<String, Object>> rows = getJdbc().queryForList(sb.toString());
