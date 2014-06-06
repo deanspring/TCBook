@@ -335,7 +335,7 @@ public class PersonBO {
 		List<Map.Entry<Long, Double>> pointsEntries = new ArrayList<Map.Entry<Long, Double>>(pointsByArtist.entrySet());
 		Collections.sort(pointsEntries, new Comparator<Map.Entry<Long, Double>>() {
 			public int compare(Map.Entry<Long, Double> o1, Map.Entry<Long, Double> o2) {
-				return o1.getValue().compareTo(o2.getValue()); // desc
+				return o2.getValue().compareTo(o1.getValue()); // desc
 			}
 		});
 
