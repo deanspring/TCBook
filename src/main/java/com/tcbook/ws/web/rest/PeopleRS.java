@@ -1,27 +1,36 @@
 package com.tcbook.ws.web.rest;
 
+import java.util.List;
+import java.util.Map;
+
+import javax.ws.rs.DELETE;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Response;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.tcbook.ws.bean.MusicalArtist;
 import com.tcbook.ws.bean.Person;
 import com.tcbook.ws.core.bo.PersonBO;
+import com.tcbook.ws.database.dao.MusicalArtistDAO;
+import com.tcbook.ws.database.dao.MusicalArtistDAOImpl;
 import com.tcbook.ws.util.TCBookConstants;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.ws.rs.*;
-import javax.ws.rs.core.Response;
-import java.util.List;
-import java.util.Map;
 
 @Path("/people")
 public class PeopleRS {
 
     private static Logger logReqAnswered = LoggerFactory.getLogger(TCBookConstants.LOG_NAME_REQUESTS_ANSWERED);
-    private static Logger logEx = LoggerFactory.getLogger(TCBookConstants.LOG_NAME_EXCEPTIONS);
 
     private static PersonBO personBO = new PersonBO();
+    private MusicalArtistDAO musicalArtistDAO = MusicalArtistDAOImpl.getInstance();
 
     @POST
     @Path("/")
@@ -113,15 +122,7 @@ public class PeopleRS {
 
         List<MusicalArtist> recommendedArtists = personBO.recommendArtistsForPerson(personId);
 
-        String artistsJson = "";
-
-        try {
-            if (recommendedArtists != null) {
-                artistsJson = new ObjectMapper().writeValueAsString(recommendedArtists);
-            }
-        } catch (Exception e) {
-            logEx.error("Error converting recommended artists {} to json", recommendedArtists, e);
-        }
+        String artistsJson = musicalArtistDAO.toJson(recommendedArtists);
 
         logReqAnswered.info("recommended artists for person {}: {}. Time it took " + (System.currentTimeMillis() - before) + "ms", personId, recommendedArtists);
 

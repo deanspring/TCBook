@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +15,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.tcbook.ws.bean.MusicalArtist;
 import com.tcbook.ws.bean.MusicalGenre;
 import com.tcbook.ws.util.TCBookConstants;
@@ -24,6 +28,9 @@ public class MusicalArtistDAOImpl extends DAO implements MusicalArtistDAO {
 
 	private static Logger log = LoggerFactory.getLogger(TCBookConstants.LOG_NAME_DAO);
 	private static Logger logEx = LoggerFactory.getLogger(TCBookConstants.LOG_NAME_EXCEPTIONS);
+
+	private CityDAO cityDAO = CityDAOImpl.getInstance();
+	private CountryDAO countryDAO = CountryDAOImpl.getInstance();
 
 	private MusicalArtistDAOImpl() {
 		super();
@@ -228,5 +235,61 @@ public class MusicalArtistDAOImpl extends DAO implements MusicalArtistDAO {
 		}
 
 		return results;
+	}
+
+	@Override
+	public String findAllAsJson() {
+		return toJson(findAll());
+	}
+
+	@Override
+	public String toJson(List<MusicalArtist> artists) {
+		JsonArray artistsJson = new JsonArray();
+
+		Map<Long, String> cities = new HashMap<Long, String>();
+		Map<Long, String> countries = new HashMap<Long, String>();
+
+		for (MusicalArtist artist : artists) {
+			getRegionInfo(cities, countries, artist);
+
+			artistsJson.add(getArtistAsJson(cities, countries, artist));
+		}
+
+		
+		return artistsJson.toString();
+	}
+
+	protected JsonObject getArtistAsJson(Map<Long, String> cities, Map<Long, String> countries, MusicalArtist artist) {
+		JsonObject artistJson = new JsonObject();
+
+		artistJson.addProperty("id", artist.getId());
+		artistJson.addProperty("artisticName", artist.getArtisticName());
+		artistJson.addProperty("city", cities.get(artist.getIdRegion()));
+		artistJson.addProperty("country", countries.get(artist.getIdRegion()));
+		artistJson.addProperty("url", artist.getUrl());
+		artistJson.add("genres", getGenresFromArtists(artist.getId()));
+		return artistJson;
+	}
+
+	protected void getRegionInfo(Map<Long, String> cities, Map<Long, String> countries, MusicalArtist artist) {
+		if (artist.getIdRegion() == null)
+			return;
+
+		if (!cities.containsKey(artist.getIdRegion())) {
+			cities.put(artist.getIdRegion(), cityDAO.findByRegion(artist.getIdRegion()).getName());
+		}
+		if (!countries.containsKey(artist.getIdRegion())) {
+			countries.put(artist.getIdRegion(), countryDAO.findByRegion(artist.getIdRegion()).getName());
+		}
+	}
+
+	protected JsonArray getGenresFromArtists(Long artistId) {
+		List<MusicalGenre> genres = getGenresOfArtist(artistId);
+
+		JsonArray genresJson = new JsonArray();
+		for (MusicalGenre musicalGenre : genres)
+			genresJson.add(new JsonPrimitive(musicalGenre.getName()));
+
+		return genresJson;
 	}
 }

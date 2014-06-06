@@ -12,6 +12,8 @@ public interface MusicalArtistDAO {
 
 	public List<MusicalArtist> findAll();
 
+	public String findAllAsJson();
+
 	public void insert(MusicalArtist artist) throws SQLException;
 
 	public void remove(Long id) throws SQLException;
@@ -19,5 +21,7 @@ public interface MusicalArtistDAO {
 	public void update(MusicalArtist artist) throws SQLException;
 
 	public List<MusicalGenre> getGenresOfArtist(Long artistId);
+
+	public String toJson(List<MusicalArtist> artists);
 
 }

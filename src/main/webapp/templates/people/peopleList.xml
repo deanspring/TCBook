@@ -31,6 +31,7 @@
 						<i class="glyphicon glyphicon-edit edit-person" title="Editar cadastro básico" data-toggle="tooltip"></i>
 						<i class="glyphicon glyphicon-user persons-social margin-left" title="Editar lista de conhecidos" data-toggle="tooltip"></i>
 						<i class="glyphicon glyphicon-thumbs-up persons-like margin-left" title="Editar lista de artistas prediletos" data-toggle="tooltip"></i>
+						<i class="glyphicon glyphicon-fire persons-artist-recommend" title="Artitas que talvez goste" data-toggle="tooltip"></i>
 						<i class="glyphicon glyphicon-remove remove-person margin-left" title="Excluir" data-toggle="tooltip"></i>
 					</td>
 				</tr>
@@ -90,6 +91,15 @@
 								$('.person-form :input:checkbox[value="' + id + '"]').click().closest('tr').find('input:text').val(artists[id]);
 						});
 					});
+				});
+			});
+		});
+		
+		$('.persons-artist-recommend').click(function() {
+			var person = getPerson($(this));
+			$.getJSON('s/people/' + person.id + '/recommend', function(artists) {
+				$('.people-list').slideUp(function() {
+					$.loadTemplate('templates/people/peopleArtistRecommend.xml', '.person-form', {artists : artists, person : person});
 				});
 			});
 		});

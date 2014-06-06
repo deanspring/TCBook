@@ -1,0 +1,38 @@
+<div>
+	<h1>
+		Quais artistas {{=it.person.name}} talvez também curta
+		<a class="btn btn-primary btn-sm float-right go-back-people-list" role="button">Voltar</a>
+	</h1>
+	<form role="form">
+		<table class="table table-striped table-hover">
+			<thead>
+				<tr class="panel-default">
+					<th class="panel-heading">#</th>
+					<th class="panel-heading">Nome</th>
+					<th class="panel-heading">Gênero</th>
+					<th class="panel-heading">País</th>
+				</tr>
+			</thead>
+			<tbody>
+			{{~it.artists :artist}}
+				<tr>
+					<td>{{=artist.id}}</td>
+					<td><a href="{{=artist.url}}">{{=artist.artisticName}}</a></td>
+					<td>{{=artist.genres ? artist.genres.join(', ') : ''}}</td>
+					<td>{{=artist.country || ''}}</td>
+				</tr>
+			{{~}}
+			</tbody>
+		</table>
+		<input type="button" class="btn btn-default" value="Salvar" data-id="{{=it.person.id || ''}}"/>
+	</form>
+	<script>
+		$('.person-form').slideDown();
+		$('.go-back-people-list').click(function() {
+			$('.person-form').slideUp(function() {
+				$('.people-list').slideDown();
+				$(this).empty();
+			});
+		});
+	</script>
+</div>

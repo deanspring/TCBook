@@ -164,7 +164,6 @@
 			{{for (var likes in it.artists_likes_by_amount) { artistsLikesByAmount.push({likes : parseInt(likes), frequency : it.artists_likes_by_amount[likes]}); if (it.artists_likes_by_amount[likes] > maxFrequency) maxFrequency = it.artists_likes_by_amount[likes];}}}
 			{{artistsLikesByAmount = artistsLikesByAmount.sort(function(a, b) { if (b.likes > a.likes) return -1; return a.likes == b.likes ? 0 : 1});}}
 			{{var f = 1 / artistsLikesByAmount.length;}}
-			{{console.info(artistsLikesByAmount, maxFrequency);}}
 			{{~artistsLikesByAmount :like:i}}
 				{{var c = parseInt(i * f * 240) + 10;}}
 				{{var height = like.frequency / maxFrequency * 300 || 0;}}
